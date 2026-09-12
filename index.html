@@ -115,11 +115,41 @@
       gap: 25px;
     }
     .card {
+      position: relative;
       background-color: white;
       border: 2px solid #E8D5C4;
       border-radius: 15px;
       width: 250px;
       padding: 25px;
+    }
+
+    /* 하트 찜하기 버튼 - 카드 오른쪽 위 */
+    .card .heart {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0.75;
+    }
+    .card .heart:hover {
+      opacity: 1;
+    }
+
+    /* 맨 위 찜한 개수 */
+    .zzim-info {
+      margin: 10px 0 0 0;
+      font-size: 15px;
+      color: #E8D5C4;
+    }
+    .zzim-info span {
+      font-weight: bold;
+      font-size: 18px;
+      color: white;
     }
     /* 상품 사진 */
     .card .photo {
@@ -304,6 +334,7 @@
   <!-- 맨 위: 쇼핑몰 이름과 한 줄 소개 -->
   <header>
     <h1>🥐 브레드피트와나</h1>
+    <p class="zzim-info">&#10084;&#65039; 찜한 상품 <span id="zzim-count">0</span>개</p>
   </header>
 
   <!-- 큰 배너 -->
@@ -331,6 +362,7 @@
     <div class="card-box">
 
       <div class="card" data-cat="빵">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <img class="photo" src="https://images.pexels.com/photos/13425794/pexels-photo-13425794.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="버터 크루아상">
         <p class="category">빵</p>
         <h3>버터 크루아상</h3>
@@ -340,6 +372,7 @@
       </div>
 
       <div class="card" data-cat="빵">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <img class="photo" src="https://images.pexels.com/photos/33541423/pexels-photo-33541423.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="홋카이도 우유식빵">
         <p class="category">빵</p>
         <h3>홋카이도 우유식빵</h3>
@@ -349,6 +382,7 @@
       </div>
 
       <div class="card" data-cat="디저트">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <img class="photo" src="https://images.pexels.com/photos/14133144/pexels-photo-14133144.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="레드벨벳 쿠키">
         <p class="category">디저트</p>
         <h3>레드벨벳 쿠키</h3>
@@ -358,6 +392,7 @@
       </div>
 
       <div class="card" data-cat="디저트" data-best="yes">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <p class="best">★ Best</p>
         <img class="photo" src="https://images.pexels.com/photos/38594732/pexels-photo-38594732.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="말차 가나슈 쿠키">
         <p class="category">디저트</p>
@@ -368,6 +403,7 @@
       </div>
 
       <div class="card" data-cat="빵">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <img class="photo" src="https://images.pexels.com/photos/18133619/pexels-photo-18133619.png?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="꾸덕 맘모스">
         <p class="category">빵</p>
         <h3>꾸덕 맘모스</h3>
@@ -377,6 +413,7 @@
       </div>
 
       <div class="card" data-cat="디저트">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <img class="photo" src="https://images.pexels.com/photos/32320128/pexels-photo-32320128.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="골드 버터 휘낭시에">
         <p class="category">디저트</p>
         <h3>골드 버터 휘낭시에</h3>
@@ -386,6 +423,7 @@
       </div>
 
       <div class="card" data-cat="빵">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <img class="photo" src="https://images.pexels.com/photos/13976570/pexels-photo-13976570.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="슈크림빵">
         <p class="category">빵</p>
         <h3>슈크림빵</h3>
@@ -395,6 +433,7 @@
       </div>
 
       <div class="card" data-cat="빵">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <img class="photo" src="https://images.pexels.com/photos/1571074/pexels-photo-1571074.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="앙버터 프레첼">
         <p class="category">빵</p>
         <h3>앙버터 프레첼</h3>
@@ -404,6 +443,7 @@
       </div>
 
       <div class="card" data-cat="디저트">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <p class="new">★ NEW</p>
         <img class="photo" src="https://images.pexels.com/photos/5847103/pexels-photo-5847103.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="임자만난쿠키">
         <p class="category">디저트</p>
@@ -414,6 +454,7 @@
       </div>
 
       <div class="card" data-cat="디저트">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <p class="new">★ NEW</p>
         <img class="photo" src="https://images.pexels.com/photos/32268801/pexels-photo-32268801.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="솔티카라멜 휘낭시에">
         <p class="category">디저트</p>
@@ -424,6 +465,7 @@
       </div>
 
       <div class="card" data-cat="빵">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <p class="hot">★ HOT</p>
         <img class="photo" src="https://images.pexels.com/photos/12097597/pexels-photo-12097597.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="메론 소보로빵">
         <p class="category">빵</p>
@@ -434,6 +476,7 @@
       </div>
 
       <div class="card" data-cat="디저트">
+        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
         <p class="new">★ NEW</p>
         <img class="photo" src="https://images.pexels.com/photos/10174841/pexels-photo-10174841.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="얼그레이 마들렌">
         <p class="category">디저트</p>
@@ -506,6 +549,28 @@
     // 버튼을 누르면 알림창이 뜹니다
     function showAlert() {
       alert("준비 중입니다! 곧 만나요 🥐");
+    }
+
+    // 찜한 상품 개수를 세는 상자
+    var 찜개수 = 0;
+
+    // 하트를 누르면 찜하기 / 찜 풀기
+    function toggleHeart(하트버튼) {
+
+      if (하트버튼.classList.contains("on")) {
+        // 이미 찜한 상태 -> 찜 풀기
+        하트버튼.classList.remove("on");
+        하트버튼.innerHTML = "&#129293;";   // 빈 하트
+        찜개수 = 찜개수 - 1;
+      } else {
+        // 찜 안 한 상태 -> 찜하기
+        하트버튼.classList.add("on");
+        하트버튼.innerHTML = "&#10084;&#65039;";   // 빨간 하트
+        찜개수 = 찜개수 + 1;
+      }
+
+      // 맨 위 숫자를 바꿔줍니다
+      document.getElementById("zzim-count").textContent = 찜개수;
     }
 
     // 메뉴를 누르면 그 분류 상품만 보여줍니다
