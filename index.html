@@ -104,19 +104,30 @@
       font-size: 28px;
       margin-bottom: 30px;
     }
-
     /* 검색창 */
+    .search-area {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 17px;
+      pointer-events: none;
+    }
     .search-box {
       width: 340px;
-      max-width: 80%;
-      padding: 12px 20px;
+      max-width: 100%;
+      padding: 12px 20px 12px 46px;
       font-size: 16px;
       font-family: inherit;
       color: #4A3428;
       border: 2px solid #A47551;
       border-radius: 25px;
       outline: none;
-      margin-bottom: 30px;
     }
     .search-box:focus {
       border-color: #6F4E37;
@@ -383,11 +394,13 @@
   <!-- 상품 카드 12개 -->
   <div class="products">
     <h2>오늘의 인기 상품 🧡</h2>
-
-    <!-- 검색창 : 글자를 칠 때마다 상품을 찾아줍니다 -->
-    <input type="text" class="search-box" id="search-box"
-           onkeyup="showProducts()"
-           placeholder="찾으시는 빵 이름을 입력해 보세요">
+    <!-- 검색창 : 글자를 칠 때마다 상품을 찾아줍니다 (초성 검색도 됩니다) -->
+    <div class="search-area">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" class="search-box" id="search-box"
+             onkeyup="showProducts()"
+             placeholder="빵 이름을 입력해 보세요 (ㅋㄹㅇㅅ 도 가능)">
+    </div>
 
     <!-- 찾는 상품이 없을 때 보여줄 안내 문구 -->
     <p id="no-result">찾으시는 상품이 없습니다. 다른 이름으로 검색해 보세요 🥐</p>
@@ -622,6 +635,60 @@
       누른버튼.classList.add("active");
     }
 
+    // ===== 초성 검색 =====
+
+    // 한글 초성 19개 (ㄱ부터 ㅎ까지 순서대로)
+    var 초성목록 = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ",
+                    "ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+
+    // 글자에서 초성만 뽑아냅니다. 예) "크루아상" -> "ㅋㄹㅇㅅ"
+    function 초성뽑기(글) {
+      var 결과 = "";
+      for (var i = 0; i < 글.length; i++) {
+        var 코드 = 글.charCodeAt(i);
+
+        // 가(0xAC00) ~ 힣(0xD7A3) 사이면 한글입니다
+        if (코드 >= 0xAC00 && 코드 <= 0xD7A3) {
+          결과 = 결과 + 초성목록[Math.floor((코드 - 0xAC00) / 588)];
+        } else {
+          결과 = 결과 + 글.charAt(i);   // 한글이 아니면 그대로
+        }
+      }
+      return 결과;
+    }
+
+    // 친 글자가 초성만으로 되어 있는지 확인합니다. 예) "ㅋㄹ" -> true
+    function 초성만인가(글) {
+      var 공백뺀글 = 글.replace(/ /g, "");
+      if (공백뺀글 === "") {
+        return false;
+      }
+      for (var i = 0; i < 공백뺀글.length; i++) {
+        if (초성목록.indexOf(공백뺀글.charAt(i)) === -1) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // 상품 이름이 검색어와 맞는지 확인합니다
+    function 이름이맞나(상품이름, 검색어) {
+      var 이름 = 상품이름.replace(/ /g, "");
+      var 검색 = 검색어.replace(/ /g, "");
+
+      if (검색 === "") {
+        return true;        // 아무것도 안 쳤으면 전부 보여줍니다
+      }
+
+      // 초성만 쳤으면 초성끼리 비교합니다
+      if (초성만인가(검색)) {
+        return 초성뽑기(이름).indexOf(검색) !== -1;
+      }
+
+      // 아니면 이름 그대로 비교합니다
+      return 이름.indexOf(검색) !== -1;
+    }
+
     // 분류와 검색어를 함께 확인해서 상품을 보여줍니다
     function showProducts() {
 
@@ -645,9 +712,8 @@
           분류맞나 = (카드.dataset.cat === 지금분류);
         }
 
-        // 2. 상품 이름에 검색어가 들어있는지 확인
-        //    (띄어쓰기를 없애고 비교해서 "우유식빵"으로도 찾을 수 있게 합니다)
-        var 검색맞나 = 상품이름.replace(/ /g, "").indexOf(검색어.replace(/ /g, "")) !== -1;
+        // 2. 이름 검색 또는 초성 검색으로 맞는지 확인
+        var 검색맞나 = 이름이맞나(상품이름, 검색어);
 
         // 3. 둘 다 맞으면 보여줍니다
         if (분류맞나 && 검색맞나) {
