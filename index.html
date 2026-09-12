@@ -264,6 +264,36 @@
       color: white;
       margin-bottom: 12px;
     }
+
+    /* ===== 마우스를 올리면 커지는 효과 ===== */
+
+    /* 모든 버튼과 메뉴에 부드러운 움직임을 켭니다 */
+    button,
+    nav a,
+    .foot-menu a {
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+
+    /* 마우스를 올렸을 때 - 살짝 커집니다 */
+    button:hover,
+    nav a:hover,
+    .foot-menu a:hover {
+      transform: scale(1.12);
+    }
+
+    /* 실제로 누르는 순간 - 살짝 눌립니다 */
+    button:active,
+    nav a:active,
+    .foot-menu a:active {
+      transform: scale(0.95);
+    }
+
+    /* 메뉴 글자는 마우스를 올리면 밑줄이 생깁니다 */
+    nav a:hover,
+    .foot-menu a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 
