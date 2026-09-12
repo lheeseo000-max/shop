@@ -92,6 +92,178 @@
     }
 
     /* ===================================================
+       로그인 / 회원가입
+       =================================================== */
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .auth-area {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .auth-btn {
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .auth-btn:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+    .auth-btn.primary {
+      background-color: var(--ink);
+      border-color: var(--ink);
+      color: white;
+    }
+    .auth-btn.primary:hover {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    /* 팝업 배경 (평소에는 숨김) */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background-color: rgba(22, 17, 14, 0.5);
+      backdrop-filter: blur(3px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-bg.open {
+      display: flex;
+    }
+
+    /* 팝업 상자 */
+    .modal {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      background-color: var(--bg);
+      border-radius: 20px;
+      padding: 38px 32px 32px 32px;
+      animation: popUp 0.25s ease;
+    }
+    @keyframes popUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal h3 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      margin: 0 0 6px 0;
+    }
+    .modal-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 24px 0;
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 26px;
+      line-height: 1;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .modal-close:hover {
+      color: var(--ink);
+    }
+
+    /* 입력칸 */
+    .form-input {
+      width: 100%;
+      padding: 13px 16px;
+      margin-bottom: 9px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--ink);
+      background-color: white;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .form-input::placeholder {
+      color: #B5ABA1;
+    }
+    .form-input:focus {
+      border-color: var(--ink);
+    }
+
+    /* 안내 문구 (평소에는 비어 있습니다) */
+    .form-msg {
+      min-height: 18px;
+      margin: 4px 0 10px 0;
+      font-size: 12.5px;
+      color: var(--accent);
+    }
+    .form-msg.ok {
+      color: #1F9B63;
+    }
+
+    .form-btn {
+      width: 100%;
+      background-color: var(--ink);
+      color: white;
+      border: none;
+      padding: 14px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.18s;
+    }
+    .form-btn:hover {
+      background-color: var(--accent);
+    }
+
+    .form-switch {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 20px 0 0 0;
+    }
+    .form-switch a {
+      color: var(--ink);
+      font-weight: 600;
+      text-decoration: underline;
+      margin-left: 4px;
+    }
+    .form-notice {
+      font-size: 11.5px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+      margin: 16px 0 0 0;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    /* ===================================================
        큰 사진 영역 (히어로)
        =================================================== */
     .hero {
@@ -525,10 +697,26 @@
   <div class="topbar">
     <div class="inner">
       <h1 class="logo">브레드피트<em>와나</em></h1>
-      <p class="zzim-info">
-        <span class="heart-mark">&#9829;</span>
-        찜 <span id="zzim-count">0</span>
-      </p>
+
+      <div class="top-right">
+        <p class="zzim-info">
+          <span class="heart-mark">&#9829;</span>
+          찜 <span id="zzim-count">0</span>
+        </p>
+
+        <!-- 로그인 전에 보이는 버튼 -->
+        <div class="auth-area" id="auth-out">
+          <button class="auth-btn" onclick="openModal('login')">로그인</button>
+          <button class="auth-btn primary" onclick="openModal('join')">회원가입</button>
+        </div>
+
+        <!-- 로그인 후에 보이는 부분 -->
+        <div class="auth-area" id="auth-in" style="display: none;">
+          <span class="user-name" id="user-name"></span>
+          <button class="auth-btn" onclick="logout()">로그아웃</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -916,7 +1104,223 @@
     </div>
   </footer>
 
+  <!-- ===== 로그인 / 회원가입 팝업 ===== -->
+  <div class="modal-bg" id="modal-bg" onclick="closeIfOutside(event)">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+
+      <!-- 로그인 화면 -->
+      <div id="form-login">
+        <h3>로그인</h3>
+        <p class="modal-sub">브레드피트와나에 오신 것을 환영합니다</p>
+
+        <input type="text" id="login-id" class="form-input" placeholder="아이디">
+        <input type="password" id="login-pw" class="form-input" placeholder="비밀번호">
+
+        <p class="form-msg" id="login-msg"></p>
+        <button class="form-btn" onclick="login()">로그인</button>
+
+        <p class="form-switch">
+          아직 회원이 아니신가요?
+          <a href="#" onclick="openModal('join')">회원가입</a>
+        </p>
+      </div>
+
+      <!-- 회원가입 화면 -->
+      <div id="form-join" style="display: none;">
+        <h3>회원가입</h3>
+        <p class="modal-sub">갓 구운 빵 소식을 가장 먼저 받아보세요</p>
+
+        <input type="text" id="join-name" class="form-input" placeholder="이름">
+        <input type="text" id="join-id" class="form-input" placeholder="아이디 (4자 이상)">
+        <input type="password" id="join-pw" class="form-input" placeholder="비밀번호 (4자 이상)">
+        <input type="password" id="join-pw2" class="form-input" placeholder="비밀번호 확인">
+
+        <p class="form-msg" id="join-msg"></p>
+        <button class="form-btn" onclick="join()">가입하기</button>
+
+        <p class="form-switch">
+          이미 회원이신가요?
+          <a href="#" onclick="openModal('login')">로그인</a>
+        </p>
+
+        <p class="form-notice">
+          연습용 사이트입니다. 실제로 쓰는 비밀번호는 입력하지 마세요.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
   <script>
+    // ===================================================
+    // 로그인 / 회원가입
+    //
+    // 서버가 없는 연습용이라, 회원 정보는 이 브라우저 안에만
+    // 저장됩니다(localStorage). 다른 기기에서는 보이지 않습니다.
+    // ===================================================
+
+    // 저장할 때 쓸 이름표
+    var 회원저장키 = "breadpit-users";
+    var 로그인저장키 = "breadpit-login";
+
+    // 저장된 회원 목록을 가져옵니다
+    function 회원목록가져오기() {
+      var 글자 = localStorage.getItem(회원저장키);
+      if (글자 === null) {
+        return {};
+      }
+      return JSON.parse(글자);
+    }
+
+    // 회원 목록을 저장합니다
+    function 회원목록저장(목록) {
+      localStorage.setItem(회원저장키, JSON.stringify(목록));
+    }
+
+    // 팝업 열기 ("login" 또는 "join")
+    function openModal(어떤것) {
+      document.getElementById("modal-bg").classList.add("open");
+
+      if (어떤것 === "join") {
+        document.getElementById("form-login").style.display = "none";
+        document.getElementById("form-join").style.display = "block";
+      } else {
+        document.getElementById("form-login").style.display = "block";
+        document.getElementById("form-join").style.display = "none";
+      }
+
+      // 안내 문구를 지웁니다
+      document.getElementById("login-msg").textContent = "";
+      document.getElementById("join-msg").textContent = "";
+    }
+
+    // 팝업 닫기
+    function closeModal() {
+      document.getElementById("modal-bg").classList.remove("open");
+    }
+
+    // 팝업 바깥쪽(어두운 곳)을 누르면 닫힙니다
+    function closeIfOutside(이벤트) {
+      if (이벤트.target.id === "modal-bg") {
+        closeModal();
+      }
+    }
+
+    // 안내 문구를 보여줍니다
+    function 안내보이기(칸이름, 글, 성공인가) {
+      var 칸 = document.getElementById(칸이름);
+      칸.textContent = 글;
+      if (성공인가) {
+        칸.classList.add("ok");
+      } else {
+        칸.classList.remove("ok");
+      }
+    }
+
+    // ===== 회원가입 =====
+    function join() {
+      var 이름 = document.getElementById("join-name").value.trim();
+      var 아이디 = document.getElementById("join-id").value.trim();
+      var 비번 = document.getElementById("join-pw").value;
+      var 비번확인 = document.getElementById("join-pw2").value;
+
+      if (이름 === "") {
+        안내보이기("join-msg", "이름을 입력해 주세요.", false);
+        return;
+      }
+      if (아이디.length < 4) {
+        안내보이기("join-msg", "아이디는 4자 이상으로 입력해 주세요.", false);
+        return;
+      }
+      if (비번.length < 4) {
+        안내보이기("join-msg", "비밀번호는 4자 이상으로 입력해 주세요.", false);
+        return;
+      }
+      if (비번 !== 비번확인) {
+        안내보이기("join-msg", "비밀번호가 서로 다릅니다.", false);
+        return;
+      }
+
+      var 회원들 = 회원목록가져오기();
+      if (회원들[아이디]) {
+        안내보이기("join-msg", "이미 사용 중인 아이디입니다.", false);
+        return;
+      }
+
+      // 새 회원을 추가하고 저장합니다
+      회원들[아이디] = { 비번: 비번, 이름: 이름 };
+      회원목록저장(회원들);
+
+      안내보이기("join-msg", "가입되었습니다! 바로 로그인할게요.", true);
+
+      // 가입한 아이디로 바로 로그인시켜 줍니다
+      로그인시키기(아이디, 이름);
+
+      setTimeout(function () {
+        closeModal();
+        document.getElementById("join-name").value = "";
+        document.getElementById("join-id").value = "";
+        document.getElementById("join-pw").value = "";
+        document.getElementById("join-pw2").value = "";
+      }, 900);
+    }
+
+    // ===== 로그인 =====
+    function login() {
+      var 아이디 = document.getElementById("login-id").value.trim();
+      var 비번 = document.getElementById("login-pw").value;
+
+      var 회원들 = 회원목록가져오기();
+
+      if (!회원들[아이디]) {
+        안내보이기("login-msg", "없는 아이디입니다.", false);
+        return;
+      }
+      if (회원들[아이디].비번 !== 비번) {
+        안내보이기("login-msg", "비밀번호가 맞지 않습니다.", false);
+        return;
+      }
+
+      안내보이기("login-msg", "로그인되었습니다!", true);
+      로그인시키기(아이디, 회원들[아이디].이름);
+
+      setTimeout(function () {
+        closeModal();
+        document.getElementById("login-id").value = "";
+        document.getElementById("login-pw").value = "";
+      }, 700);
+    }
+
+    // 화면을 로그인 상태로 바꿉니다
+    function 로그인시키기(아이디, 이름) {
+      localStorage.setItem(로그인저장키, 아이디);
+      document.getElementById("auth-out").style.display = "none";
+      document.getElementById("auth-in").style.display = "flex";
+      document.getElementById("user-name").textContent = 이름 + "님";
+    }
+
+    // ===== 로그아웃 =====
+    function logout() {
+      localStorage.removeItem(로그인저장키);
+      document.getElementById("auth-out").style.display = "flex";
+      document.getElementById("auth-in").style.display = "none";
+      alert("로그아웃되었습니다.");
+    }
+
+    // 페이지를 열 때, 이미 로그인해 둔 상태인지 확인합니다
+    function 로그인확인() {
+      var 아이디 = localStorage.getItem(로그인저장키);
+      if (아이디 === null) {
+        return;
+      }
+      var 회원들 = 회원목록가져오기();
+      if (회원들[아이디]) {
+        로그인시키기(아이디, 회원들[아이디].이름);
+      }
+    }
+    로그인확인();
+
     // 버튼을 누르면 알림창이 뜹니다
     function showAlert() {
       alert("준비 중입니다! 곧 만나요");
