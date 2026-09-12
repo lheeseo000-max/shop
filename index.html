@@ -12,8 +12,13 @@
     body {
       margin: 0;
       font-family: "맑은 고딕", sans-serif;
-      background-color: #E8A87C;
       color: #4A3428;
+
+      /* 빵집 배경 사진 (스크롤해도 고정됩니다) */
+      background-image: url("https://images.pexels.com/photos/30510114/pexels-photo-30510114.jpeg?auto=compress&cs=tinysrgb&w=1600");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
 
     /* 맨 위 - 쇼핑몰 이름 */
@@ -55,7 +60,7 @@
 
     /* 큰 배너 */
     .banner {
-      background-color: #E8D5C4;
+      background-color: rgba(232, 213, 196, 0.93);
       text-align: center;
       padding: 30px 20px;
     }
@@ -82,6 +87,7 @@
 
     /* 상품 영역 */
     .products {
+      background-color: rgba(255, 248, 240, 0.93);
       text-align: center;
       padding: 50px 20px;
     }
@@ -104,8 +110,13 @@
       width: 250px;
       padding: 25px;
     }
-    .card .emoji {
-      font-size: 70px;
+    /* 상품 사진 */
+    .card .photo {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
     }
     /* 빨간색 Best 배지 - 깜빡이는 효과 */
     .best {
@@ -166,7 +177,7 @@
 
     /* 쇼핑몰 소개 */
     .about {
-      background-color: #E8D5C4;
+      background-color: rgba(232, 213, 196, 0.93);
       text-align: center;
       padding: 50px 20px;
     }
@@ -252,7 +263,7 @@
     <div class="card-box">
 
       <div class="card" data-cat="빵">
-        <div class="emoji">🥐</div>
+        <img class="photo" src="https://images.pexels.com/photos/13425794/pexels-photo-13425794.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="버터 크루아상">
         <p class="category">빵</p>
         <h3>버터 크루아상</h3>
         <p class="old-price">4,500원</p>
@@ -261,7 +272,7 @@
       </div>
 
       <div class="card" data-cat="빵">
-        <div class="emoji">🍞</div>
+        <img class="photo" src="https://images.pexels.com/photos/33541423/pexels-photo-33541423.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="홋카이도 우유식빵">
         <p class="category">빵</p>
         <h3>홋카이도 우유식빵</h3>
         <p class="old-price">6,000원</p>
@@ -270,7 +281,7 @@
       </div>
 
       <div class="card" data-cat="디저트">
-        <div class="emoji">🍪</div>
+        <img class="photo" src="https://images.pexels.com/photos/14133144/pexels-photo-14133144.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="레드벨벳 쿠키">
         <p class="category">디저트</p>
         <h3>레드벨벳 쿠키</h3>
         <p class="old-price">6,000원</p>
@@ -280,7 +291,7 @@
 
       <div class="card" data-cat="디저트" data-best="yes">
         <p class="best">★ Best</p>
-        <div class="emoji">🍪</div>
+        <img class="photo" src="https://images.pexels.com/photos/38594732/pexels-photo-38594732.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="말차 가나슈 쿠키">
         <p class="category">디저트</p>
         <h3>말차 가나슈 쿠키</h3>
         <p class="old-price">6,000원</p>
@@ -289,7 +300,7 @@
       </div>
 
       <div class="card" data-cat="빵">
-        <div class="emoji">🥯</div>
+        <img class="photo" src="https://images.pexels.com/photos/18133619/pexels-photo-18133619.png?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="꾸덕 맘모스">
         <p class="category">빵</p>
         <h3>꾸덕 맘모스</h3>
         <p class="old-price">7,800원</p>
@@ -298,7 +309,7 @@
       </div>
 
       <div class="card" data-cat="디저트">
-        <div class="emoji">🧈</div>
+        <img class="photo" src="https://images.pexels.com/photos/32320128/pexels-photo-32320128.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="골드 버터 휘낭시에">
         <p class="category">디저트</p>
         <h3>골드 버터 휘낭시에</h3>
         <p class="old-price">3,900원</p>
@@ -307,7 +318,7 @@
       </div>
 
       <div class="card" data-cat="빵">
-        <div class="emoji">🥞</div>
+        <img class="photo" src="https://images.pexels.com/photos/13976570/pexels-photo-13976570.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="슈크림빵">
         <p class="category">빵</p>
         <h3>슈크림빵</h3>
         <p class="old-price">3,900원</p>
@@ -316,7 +327,7 @@
       </div>
 
       <div class="card" data-cat="빵">
-        <div class="emoji">🥨</div>
+        <img class="photo" src="https://images.pexels.com/photos/1571074/pexels-photo-1571074.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="앙버터 프레첼">
         <p class="category">빵</p>
         <h3>앙버터 프레첼</h3>
         <p class="old-price">4,600원</p>
@@ -326,7 +337,7 @@
 
       <div class="card" data-cat="디저트">
         <p class="new">★ NEW</p>
-        <div class="emoji">🍪</div>
+        <img class="photo" src="https://images.pexels.com/photos/5847103/pexels-photo-5847103.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="임자만난쿠키">
         <p class="category">디저트</p>
         <h3>임자만난쿠키</h3>
         <p class="old-price">6,000원</p>
@@ -336,7 +347,7 @@
 
       <div class="card" data-cat="디저트">
         <p class="new">★ NEW</p>
-        <div class="emoji">🧈</div>
+        <img class="photo" src="https://images.pexels.com/photos/32268801/pexels-photo-32268801.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="솔티카라멜 휘낭시에">
         <p class="category">디저트</p>
         <h3>솔티카라멜 휘낭시에</h3>
         <p class="old-price">3,700원</p>
@@ -346,7 +357,7 @@
 
       <div class="card" data-cat="빵">
         <p class="hot">★ HOT</p>
-        <div class="emoji">🍈</div>
+        <img class="photo" src="https://images.pexels.com/photos/12097597/pexels-photo-12097597.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="메론 소보로빵">
         <p class="category">빵</p>
         <h3>메론 소보로빵</h3>
         <p class="old-price">6,000원</p>
@@ -356,7 +367,7 @@
 
       <div class="card" data-cat="디저트">
         <p class="new">★ NEW</p>
-        <div class="emoji">🧁</div>
+        <img class="photo" src="https://images.pexels.com/photos/10174841/pexels-photo-10174841.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="얼그레이 마들렌">
         <p class="category">디저트</p>
         <h3>얼그레이 마들렌</h3>
         <p class="old-price">3,500원</p>
