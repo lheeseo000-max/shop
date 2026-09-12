@@ -107,7 +107,33 @@
       margin-bottom: 30px;
     }
 
-    /* 상품 카드 3개 */
+    /* 검색창 */
+    .search-box {
+      width: 340px;
+      max-width: 80%;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-family: inherit;
+      color: #4A3428;
+      border: 2px solid #A47551;
+      border-radius: 25px;
+      outline: none;
+      margin-bottom: 30px;
+    }
+    .search-box:focus {
+      border-color: #6F4E37;
+      box-shadow: 0 0 8px rgba(111, 78, 55, 0.3);
+    }
+
+    /* 찾는 상품이 없을 때 안내 문구 (평소에는 숨김) */
+    #no-result {
+      display: none;
+      font-size: 17px;
+      color: #6F4E37;
+      padding: 30px 0 10px 0;
+    }
+
+    /* 상품 카드 목록 */
     .card-box {
       display: flex;
       justify-content: center;
@@ -359,6 +385,14 @@
   <div class="products">
     <h2>오늘의 인기 상품 🧡</h2>
 
+    <!-- 검색창 : 글자를 칠 때마다 상품을 찾아줍니다 -->
+    <input type="text" class="search-box" id="search-box"
+           onkeyup="showProducts()"
+           placeholder="찾으시는 빵 이름을 입력해 보세요">
+
+    <!-- 찾는 상품이 없을 때 보여줄 안내 문구 -->
+    <p id="no-result">찾으시는 상품이 없습니다. 다른 이름으로 검색해 보세요 🥐</p>
+
     <div class="card-box">
 
       <div class="card" data-cat="빵">
@@ -573,36 +607,65 @@
       document.getElementById("zzim-count").textContent = 찜개수;
     }
 
-    // 메뉴를 누르면 그 분류 상품만 보여줍니다
+    // 지금 선택된 분류를 기억해 둡니다
+    var 지금분류 = "전체";
+
+    // 메뉴를 누르면 그 분류를 기억하고 상품을 다시 보여줍니다
     function showCategory(분류, 누른버튼) {
+      지금분류 = 분류;
+      showProducts();
 
-      // 1. 상품 카드를 하나씩 확인합니다
-      var 카드들 = document.querySelectorAll(".card");
-      for (var i = 0; i < 카드들.length; i++) {
-        var 카드 = 카드들[i];
-        var 보여줄까 = false;
-
-        if (분류 === "전체") {
-          보여줄까 = true;
-        } else if (분류 === "인기") {
-          보여줄까 = (카드.dataset.best === "yes");
-        } else {
-          보여줄까 = (카드.dataset.cat === 분류);
-        }
-
-        if (보여줄까) {
-          카드.style.display = "block";
-        } else {
-          카드.style.display = "none";
-        }
-      }
-
-      // 2. 메뉴 버튼 색을 바꿉니다
+      // 메뉴 버튼 색을 바꿉니다
       var 메뉴들 = document.querySelectorAll("nav a");
       for (var j = 0; j < 메뉴들.length; j++) {
         메뉴들[j].classList.remove("active");
       }
       누른버튼.classList.add("active");
+    }
+
+    // 분류와 검색어를 함께 확인해서 상품을 보여줍니다
+    function showProducts() {
+
+      // 검색창에 친 글자를 가져옵니다 (대소문자 구분 없앰)
+      var 검색어 = document.getElementById("search-box").value.toLowerCase();
+
+      var 카드들 = document.querySelectorAll(".card");
+      var 보인개수 = 0;
+
+      for (var i = 0; i < 카드들.length; i++) {
+        var 카드 = 카드들[i];
+        var 상품이름 = 카드.querySelector("h3").textContent.toLowerCase();
+
+        // 1. 분류가 맞는지 확인
+        var 분류맞나 = false;
+        if (지금분류 === "전체") {
+          분류맞나 = true;
+        } else if (지금분류 === "인기") {
+          분류맞나 = (카드.dataset.best === "yes");
+        } else {
+          분류맞나 = (카드.dataset.cat === 지금분류);
+        }
+
+        // 2. 상품 이름에 검색어가 들어있는지 확인
+        //    (띄어쓰기를 없애고 비교해서 "우유식빵"으로도 찾을 수 있게 합니다)
+        var 검색맞나 = 상품이름.replace(/ /g, "").indexOf(검색어.replace(/ /g, "")) !== -1;
+
+        // 3. 둘 다 맞으면 보여줍니다
+        if (분류맞나 && 검색맞나) {
+          카드.style.display = "block";
+          보인개수 = 보인개수 + 1;
+        } else {
+          카드.style.display = "none";
+        }
+      }
+
+      // 보이는 상품이 하나도 없으면 안내 문구를 띄웁니다
+      var 안내문구 = document.getElementById("no-result");
+      if (보인개수 === 0) {
+        안내문구.style.display = "block";
+      } else {
+        안내문구.style.display = "none";
+      }
     }
   </script>
 
