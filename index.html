@@ -224,9 +224,34 @@
       background-color: #4A3428;
       color: white;
       text-align: center;
-      padding: 30px 20px;
-      font-size: 15px;
+      padding: 30px 20px 35px 20px;
       line-height: 1.8;
+    }
+
+    /* 하단 메뉴 4개 */
+    .foot-menu {
+      padding-bottom: 18px;
+      border-bottom: 1px solid #6F4E37;
+      margin-bottom: 18px;
+    }
+    .foot-menu a {
+      color: white;
+      text-decoration: none;
+      margin: 0 14px;
+      font-size: 15px;
+    }
+
+    /* 가게 정보 */
+    .foot-info p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #E8D5C4;
+    }
+    .foot-info .shop-name {
+      font-family: "Jua", "맑은 고딕", sans-serif;
+      font-size: 20px;
+      color: white;
+      margin-bottom: 12px;
     }
   </style>
 </head>
@@ -414,12 +439,23 @@
   </div>
   <!-- 맨 아래: 연락처 안내 -->
   <footer>
-    <p>
-      브레드피트와나<br>
-      📞 010-1234-5678<br>
-      📧 breadwife@abcd.cor<br>
-      🕘 문의시간 : 평일 오전 10시 ~ 오후 6시
-    </p>
+
+    <!-- 하단 메뉴 4개 -->
+    <div class="foot-menu">
+      <a href="#" onclick="showAlert()">이용안내</a>
+      <a href="#" onclick="showAlert()">배송조회</a>
+      <a href="#" onclick="showAlert()">교환·반품</a>
+      <a href="#" onclick="showAlert()">자주 묻는 질문</a>
+    </div>
+
+    <!-- 가게 정보 -->
+    <div class="foot-info">
+      <p class="shop-name">브레드피트와나</p>
+      <p>📞 문의전화 : 010-1234-5678</p>
+      <p>🕘 상담시간 : 평일 오전 10시 ~ 오후 6시</p>
+      <p>📧 breadwife@abcd.cor</p>
+    </div>
+
   </footer>
 
   <script>
