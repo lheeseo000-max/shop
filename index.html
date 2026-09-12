@@ -4,635 +4,843 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>브레드피트와나</title>
-  <!-- 둥글고 부드러운 한글 글꼴 (인터넷에서 가져옵니다) -->
-  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+  <!-- 요즘 많이 쓰는 깔끔한 한글 글꼴 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <!-- 가게 이름에 쓸 부드러운 글꼴 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap">
 
   <style>
-    /* 전체 기본 설정 */
+    /* ===================================================
+       색상과 기본 설정
+       =================================================== */
+    :root {
+      --bg:      #FAF8F5;   /* 바탕색 (아주 연한 크림) */
+      --ink:     #16110E;   /* 글씨색 (거의 검정) */
+      --muted:   #8C8177;   /* 흐린 글씨색 */
+      --line:    #E8E2DA;   /* 선 색 */
+      --accent:  #D94F2B;   /* 강조색 (따뜻한 주황) */
+      --card:    #FFFFFF;   /* 카드 바탕 */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: "맑은 고딕", sans-serif;
-      color: #4A3428;
-
-      /* 빵집 배경 사진 (스크롤해도 고정됩니다) */
-      background-image: url("https://images.pexels.com/photos/30510114/pexels-photo-30510114.jpeg?auto=compress&cs=tinysrgb&w=1600");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: "Pretendard", "맑은 고딕", sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* 전체를 감싸는 상자 - 양옆으로 배경 사진이 보입니다 */
-    .wrap {
-      max-width: 1100px;
+    /* 내용을 가운데로 모으는 상자 */
+    .inner {
+      max-width: 1180px;
       margin: 0 auto;
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+      padding: 0 24px;
     }
 
-    /* 맨 위 - 쇼핑몰 이름 */
-    header {
-      background-color: transparent;
-      color: white;
-      text-align: center;
-      padding: 30px 20px;
+    /* ===================================================
+       맨 위 고정 바 (스크롤해도 따라옵니다)
+       =================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background-color: rgba(250, 248, 245, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
-    header h1 {
+    .topbar .inner {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: "Gowun Dodum", "Pretendard", sans-serif;
+      font-size: 21px;
+      font-weight: 400;
+      letter-spacing: 0;
       margin: 0;
-      font-size: 42px;
-      font-family: "Jua", "맑은 고딕", sans-serif;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+    .logo em {
+      font-style: normal;
+      color: var(--accent);
     }
 
-    /* 메뉴 */
-    nav {
-      background-color: rgba(111, 78, 55, 0.6);
+    /* 찜 개수 */
+    .zzim-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .zzim-info .heart-mark {
+      color: var(--accent);
+      font-size: 15px;
+    }
+    #zzim-count {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* ===================================================
+       큰 사진 영역 (히어로)
+       =================================================== */
+    .hero {
+      position: relative;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      padding: 15px;
-    }
-    nav a {
       color: white;
-      text-decoration: none;
-      margin: 0 12px;
-      font-size: 17px;
-      font-weight: bold;
+      overflow: hidden;
     }
-
-    /* 지금 선택된 메뉴 버튼 - 흰 바탕에 갈색 글씨 */
-    nav a.active {
-      background-color: white;
-      color: #6F4E37;
+    .hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* 사진 위에 어두운 막을 덮어 글씨가 잘 보이게 합니다 */
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+                  rgba(22, 17, 14, 0.25) 0%,
+                  rgba(22, 17, 14, 0.62) 100%);
+    }
+    .hero-text {
+      position: relative;
+      z-index: 2;
+      padding: 0 24px;
+    }
+    .hero-label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
       padding: 6px 14px;
-      border-radius: 20px;
-    }
-
-    /* 큰 배너 - 막을 걷어내고 배경 사진이 그대로 보입니다 */
-    .banner {
-      background-color: transparent;
-      color: white;
-      text-align: center;
-      padding: 55px 20px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.6);
-    }
-    .banner .emoji {
-      font-size: 50px;
-    }
-    .banner h2 {
-      font-size: 24px;
-      margin: 10px 0;
-    }
-    .banner p {
-      font-size: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 100px;
       margin-bottom: 18px;
     }
-    .banner button {
-      background-color: #6F4E37;
-      color: white;
-      border: none;
-      padding: 12px 32px;
+    .hero h2 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.25;
+      margin: 0 0 14px 0;
+    }
+    .hero p {
       font-size: 16px;
-      border-radius: 30px;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0 0 28px 0;
+    }
+    .hero button {
+      background-color: white;
+      color: var(--ink);
+      border: none;
+      padding: 15px 38px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 100px;
       cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .hero button:hover {
+      transform: scale(1.05);
+      background-color: var(--accent);
+      color: white;
     }
 
-    /* 상품 영역 */
-    .products {
-      background-color: rgba(255, 248, 240, 0.93);
-      text-align: center;
-      padding: 50px 20px;
+    /* ===================================================
+       카테고리 + 검색 줄
+       =================================================== */
+    .filter-bar {
+      position: sticky;
+      top: 64px;
+      z-index: 40;
+      background-color: rgba(250, 248, 245, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 0;
     }
-    .products h2 {
-      font-size: 28px;
-      margin-bottom: 30px;
+    .filter-bar .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
     }
+
+    /* 카테고리 알약 버튼 */
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .chip:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+    .chip.active {
+      background-color: var(--ink);
+      border-color: var(--ink);
+      color: white;
+    }
+
     /* 검색창 */
     .search-area {
       position: relative;
-      display: inline-block;
-      margin-bottom: 30px;
+      flex: 0 1 280px;
     }
     .search-icon {
       position: absolute;
-      left: 18px;
+      left: 15px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 17px;
+      font-size: 14px;
+      color: var(--muted);
       pointer-events: none;
     }
     .search-box {
-      width: 340px;
-      max-width: 100%;
-      padding: 12px 20px 12px 46px;
-      font-size: 16px;
+      width: 100%;
+      padding: 10px 16px 10px 38px;
       font-family: inherit;
-      color: #4A3428;
-      border: 2px solid #A47551;
-      border-radius: 25px;
+      font-size: 14px;
+      color: var(--ink);
+      background-color: white;
+      border: 1px solid var(--line);
+      border-radius: 100px;
       outline: none;
+      transition: border-color 0.18s;
+    }
+    .search-box::placeholder {
+      color: #B5ABA1;
     }
     .search-box:focus {
-      border-color: #6F4E37;
-      box-shadow: 0 0 8px rgba(111, 78, 55, 0.3);
+      border-color: var(--ink);
     }
 
-    /* 찾는 상품이 없을 때 안내 문구 (평소에는 숨김) */
-    #no-result {
-      display: none;
-      font-size: 17px;
-      color: #6F4E37;
-      padding: 30px 0 10px 0;
+    /* ===================================================
+       상품 목록
+       =================================================== */
+    .products {
+      padding: 56px 0 80px 0;
     }
-
-    /* 상품 카드 목록 */
-    .card-box {
+    .section-head {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 32px;
     }
+    .section-head h2 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      margin: 0;
+    }
+    .section-head .count {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* 상품을 격자로 배치합니다 (화면이 좁아지면 자동으로 줄어듭니다) */
+    .card-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 34px 22px;
+    }
+
     .card {
       position: relative;
-      background-color: white;
-      border: 2px solid #E8D5C4;
-      border-radius: 15px;
-      width: 250px;
-      padding: 25px;
     }
 
-    /* 하트 찜하기 버튼 - 카드 오른쪽 위 */
-    .card .heart {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: 26px;
-      line-height: 1;
-      cursor: pointer;
-      opacity: 0.75;
+    /* 사진 */
+    .card .thumb {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background-color: #EFEAE3;
+      aspect-ratio: 1 / 1;
+      margin-bottom: 14px;
     }
-    .card .heart:hover {
-      opacity: 1;
-    }
-
-    /* 맨 위 찜한 개수 */
-    .zzim-info {
-      margin: 10px 0 0 0;
-      font-size: 15px;
-      color: white;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-    }
-    .zzim-info span {
-      font-weight: bold;
-      font-size: 18px;
-      color: white;
-    }
-    /* 상품 사진 */
     .card .photo {
       width: 100%;
-      height: 170px;
+      height: 100%;
       object-fit: cover;
-      border-radius: 12px;
       display: block;
+      transition: transform 0.45s ease;
     }
-    /* 빨간색 Best 배지 - 깜빡이는 효과 */
-    .best {
-      color: #E01B24;
-      font-size: 15px;
-      font-weight: bold;
-      margin: 0;
-      animation: blink 1s infinite;
+    .card:hover .photo {
+      transform: scale(1.06);
     }
-    @keyframes blink {
-      50% { opacity: 0; }
+
+    /* 배지 (사진 왼쪽 위) */
+    .badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 2;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 5px 11px;
+      border-radius: 100px;
+      color: white;
+      animation: softPulse 2.4s ease-in-out infinite;
     }
-    /* 초록색 NEW 배지 - Best와 같은 깜빡이는 효과 */
-    .new {
-      color: #2E9E4F;
-      font-size: 15px;
-      font-weight: bold;
-      margin: 0;
-      animation: blink 1s infinite;
+    .badge.best { background-color: #D92B4B; }
+    .badge.new  { background-color: #1F9B63; }
+    .badge.hot  { background-color: #F26B21; }
+
+    /* 은은하게 숨 쉬는 효과 */
+    @keyframes softPulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.55; }
     }
-    /* 주황색 HOT 배지 - 같은 깜빡이는 효과 */
-    .hot {
-      color: #FF6B00;
-      font-size: 15px;
-      font-weight: bold;
-      margin: 0;
-      animation: blink 1s infinite;
+
+    /* 하트 찜하기 (사진 오른쪽 위) */
+    .heart {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      font-size: 17px;
+      line-height: 1;
+      color: #9C918A;
+      cursor: pointer;
+      transition: transform 0.18s, color 0.18s;
     }
-    .category {
-      color: #A47551;
-      font-size: 14px;
-      margin: 10px 0 0 0;
+    .heart:hover {
+      transform: scale(1.15);
+      color: var(--accent);
+    }
+    .heart.on {
+      color: var(--accent);
+    }
+
+    /* 글씨 부분 */
+    .card .category {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 4px 0;
     }
     .card h3 {
-      font-size: 20px;
-      margin: 5px 0 10px 0;
-    }
-    .old-price {
-      color: #999;
-      text-decoration: line-through;
       font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0 0 8px 0;
     }
-    .new-price {
-      color: #C1440E;
-      font-size: 22px;
-      font-weight: bold;
-      margin: 5px 0 15px 0;
-    }
-    .card button {
-      background-color: #A47551;
-      color: white;
-      border: none;
-      padding: 12px 30px;
-      font-size: 16px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    /* 쇼핑몰 소개 */
-    .about {
-      background-color: rgba(232, 213, 196, 0.93);
-      text-align: center;
-      padding: 50px 20px;
-    }
-    .about h2 {
-      font-family: "Jua", "맑은 고딕", sans-serif;
-      font-size: 28px;
-      margin: 0 0 20px 0;
-    }
-    .about-text {
-      font-size: 17px;
-      line-height: 2;
-      margin: 0 0 40px 0;
-    }
-
-    /* 안내 3개 */
-    .info-box {
+    .price-row {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
-    }
-    .info {
-      background-color: white;
-      border-radius: 15px;
-      width: 230px;
-      padding: 25px 20px;
-    }
-    .info .emoji {
-      font-size: 45px;
-    }
-    .info h3 {
-      font-size: 19px;
-      margin: 12px 0 8px 0;
-    }
-    .info p {
-      font-size: 15px;
-      line-height: 1.6;
-      margin: 0;
-      color: #6F4E37;
-    }
-
-    /* 맨 아래 연락처 */
-    footer {
-      background-color: #4A3428;
-      color: white;
-      text-align: center;
-      padding: 30px 20px 35px 20px;
-      line-height: 1.8;
-    }
-
-    /* 하단 메뉴 4개 */
-    .foot-menu {
-      padding-bottom: 18px;
-      border-bottom: 1px solid #6F4E37;
-      margin-bottom: 18px;
-    }
-    .foot-menu a {
-      color: white;
-      text-decoration: none;
-      margin: 0 14px;
-      font-size: 15px;
-    }
-
-    /* 가게 정보 */
-    .foot-info p {
-      margin: 4px 0;
-      font-size: 14px;
-      color: #E8D5C4;
-    }
-    .foot-info .shop-name {
-      font-family: "Jua", "맑은 고딕", sans-serif;
-      font-size: 20px;
-      color: white;
+      align-items: baseline;
+      gap: 7px;
       margin-bottom: 12px;
     }
+    .sale {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .new-price {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .old-price {
+      font-size: 13px;
+      color: #B5ABA1;
+      text-decoration: line-through;
+      margin: 0;
+    }
 
-    /* ===== 마우스를 올리면 커지는 효과 ===== */
+    .card .buy {
+      width: 100%;
+      background-color: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .card .buy:hover {
+      background-color: var(--ink);
+      border-color: var(--ink);
+      color: white;
+    }
 
-    /* 모든 버튼과 메뉴에 부드러운 움직임을 켭니다 */
-    button,
-    nav a,
+    /* 찾는 상품이 없을 때 */
+    #no-result {
+      display: none;
+      text-align: center;
+      padding: 70px 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* ===================================================
+       쇼핑몰 소개
+       =================================================== */
+    .about {
+      background-color: #F1EBE3;
+      padding: 76px 0;
+    }
+    .about-text {
+      max-width: 620px;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.65;
+      margin: 0 0 52px 0;
+    }
+    .about-text span {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .info-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .info {
+      background-color: var(--bg);
+      border-radius: 16px;
+      padding: 28px 24px;
+    }
+    .info .num {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin: 0 0 12px 0;
+    }
+    .info h3 {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 8px 0;
+    }
+    .info p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ===================================================
+       맨 아래
+       =================================================== */
+    footer {
+      background-color: var(--ink);
+      color: rgba(255, 255, 255, 0.55);
+      padding: 48px 0 56px 0;
+      font-size: 13px;
+    }
+    .foot-menu {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding-bottom: 26px;
+      margin-bottom: 26px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    }
     .foot-menu a {
-      transition: transform 0.2s;
-      display: inline-block;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color 0.18s;
     }
-
-    /* 마우스를 올렸을 때 - 살짝 커집니다 */
-    button:hover,
-    nav a:hover,
     .foot-menu a:hover {
-      transform: scale(1.12);
+      color: white;
+    }
+    .foot-info .shop-name {
+      font-family: "Gowun Dodum", "Pretendard", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0;
+      color: white;
+      margin: 0 0 12px 0;
+    }
+    .foot-info p {
+      margin: 3px 0;
     }
 
-    /* 실제로 누르는 순간 - 살짝 눌립니다 */
-    button:active,
-    nav a:active,
-    .foot-menu a:active {
-      transform: scale(0.95);
-    }
-
-    /* 메뉴 글자는 마우스를 올리면 밑줄이 생깁니다 */
-    nav a:hover,
-    .foot-menu a:hover {
-      text-decoration: underline;
+    /* ===================================================
+       화면이 좁을 때 (휴대폰)
+       =================================================== */
+    @media (max-width: 680px) {
+      .hero { height: 340px; }
+      .hero h2 { font-size: 30px; }
+      .filter-bar .inner { flex-direction: column; align-items: stretch; }
+      .search-area { flex: 1 1 auto; }
+      .chips { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .chip { flex: 0 0 auto; }
+      .card-box { grid-template-columns: repeat(2, 1fr); gap: 26px 14px; }
+      .about-text { font-size: 19px; }
     }
   </style>
 </head>
 
 <body>
-  <!-- 전체를 감싸는 상자 - 양옆으로 배경 사진이 보입니다 -->
-  <div class="wrap">
 
-  <!-- 맨 위: 쇼핑몰 이름과 한 줄 소개 -->
-  <header>
-    <h1>🥐 브레드피트와나</h1>
-    <p class="zzim-info">&#10084;&#65039; 찜한 상품 <span id="zzim-count">0</span>개</p>
-  </header>
-
-  <!-- 큰 배너 -->
-  <div class="banner">
-    <div class="emoji">🍞</div>
-    <h2>갓 구운 빵, 매일 아침 배송</h2>
-    <p>프리미엄 재료만 사용한 맛을 선물해 드립니다</p>
-    <button onclick="showAlert()">지금 주문하기</button>
+  <!-- ===== 맨 위 고정 바 ===== -->
+  <div class="topbar">
+    <div class="inner">
+      <h1 class="logo">브레드피트<em>와나</em></h1>
+      <p class="zzim-info">
+        <span class="heart-mark">&#9829;</span>
+        찜 <span id="zzim-count">0</span>
+      </p>
+    </div>
   </div>
 
-  <!-- 메뉴 6개 : 누르면 그 분류 상품만 보입니다 -->
-  <nav>
-    <a href="#" onclick="showCategory('전체', this)">홈</a>
-    <a href="#" onclick="showCategory('전체', this)" class="active">전체상품</a>
-    <a href="#" onclick="showCategory('빵', this)">빵</a>
-    <a href="#" onclick="showCategory('디저트', this)">디저트</a>
-    <a href="#" onclick="showCategory('인기', this)">인기상품</a>
-    <a href="#" onclick="showAlert()">주문안내</a>
-  </nav>
+  <!-- ===== 큰 사진 영역 ===== -->
+  <div class="hero">
+    <img src="https://images.pexels.com/photos/30510114/pexels-photo-30510114.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="빵집 진열장">
+    <div class="hero-text">
+      <span class="hero-label">EVERY MORNING, FRESH</span>
+      <h2>갓 구운 빵을<br>오늘 바로 받아보세요</h2>
+      <p>프리미엄 재료만 사용한 맛을 선물해 드립니다</p>
+      <button onclick="showAlert()">전체 상품 보기</button>
+    </div>
+  </div>
 
-  <!-- 상품 카드 12개 -->
+  <!-- ===== 카테고리 + 검색 ===== -->
+  <div class="filter-bar">
+    <div class="inner">
+
+      <div class="chips">
+        <button class="chip active" onclick="showCategory('전체', this)">전체</button>
+        <button class="chip" onclick="showCategory('빵', this)">빵</button>
+        <button class="chip" onclick="showCategory('디저트', this)">디저트</button>
+        <button class="chip" onclick="showCategory('인기', this)">인기</button>
+        <button class="chip" onclick="showAlert()">주문안내</button>
+      </div>
+
+      <div class="search-area">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" class="search-box" id="search-box"
+               onkeyup="showProducts()"
+               placeholder="빵 이름 검색 (ㅋㄹㅇㅅ 도 가능)">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 상품 목록 ===== -->
   <div class="products">
-    <h2>오늘의 인기 상품 🧡</h2>
-    <!-- 검색창 : 글자를 칠 때마다 상품을 찾아줍니다 (초성 검색도 됩니다) -->
-    <div class="search-area">
-      <span class="search-icon">&#128269;</span>
-      <input type="text" class="search-box" id="search-box"
-             onkeyup="showProducts()"
-             placeholder="빵 이름을 입력해 보세요 (ㅋㄹㅇㅅ 도 가능)">
-    </div>
+    <div class="inner">
 
-    <!-- 찾는 상품이 없을 때 보여줄 안내 문구 -->
-    <p id="no-result">찾으시는 상품이 없습니다. 다른 이름으로 검색해 보세요 🥐</p>
-
-    <div class="card-box">
-
-      <div class="card" data-cat="빵">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <img class="photo" src="https://images.pexels.com/photos/13425794/pexels-photo-13425794.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="버터 크루아상">
-        <p class="category">빵</p>
-        <h3>버터 크루아상</h3>
-        <p class="old-price">4,500원</p>
-        <p class="new-price">4,000원</p>
-        <button onclick="showAlert()">장바구니</button>
+      <div class="section-head">
+        <h2>브레드피트의 모든 빵</h2>
+        <span class="count"><span id="shown-count">12</span>개 상품</span>
       </div>
 
-      <div class="card" data-cat="빵">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <img class="photo" src="https://images.pexels.com/photos/33541423/pexels-photo-33541423.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="홋카이도 우유식빵">
-        <p class="category">빵</p>
-        <h3>홋카이도 우유식빵</h3>
-        <p class="old-price">6,000원</p>
-        <p class="new-price">5,400원</p>
-        <button onclick="showAlert()">장바구니</button>
+      <div class="card-box">
+
+        <div class="card" data-cat="빵">
+          <div class="thumb">
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/13425794/pexels-photo-13425794.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="버터 크루아상">
+          </div>
+          <p class="category">빵</p>
+          <h3>버터 크루아상</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">4,000원</p>
+            <p class="old-price">4,500원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="빵">
+          <div class="thumb">
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/33541423/pexels-photo-33541423.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="홋카이도 우유식빵">
+          </div>
+          <p class="category">빵</p>
+          <h3>홋카이도 우유식빵</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">5,400원</p>
+            <p class="old-price">6,000원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="디저트">
+          <div class="thumb">
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/14133144/pexels-photo-14133144.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="레드벨벳 쿠키">
+          </div>
+          <p class="category">디저트</p>
+          <h3>레드벨벳 쿠키</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">5,400원</p>
+            <p class="old-price">6,000원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="디저트" data-best="yes">
+          <div class="thumb">
+            <span class="badge best">BEST</span>
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/38594732/pexels-photo-38594732.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="말차 가나슈 쿠키">
+          </div>
+          <p class="category">디저트</p>
+          <h3>말차 가나슈 쿠키</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">5,400원</p>
+            <p class="old-price">6,000원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="빵">
+          <div class="thumb">
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/18133619/pexels-photo-18133619.png?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="꾸덕 맘모스">
+          </div>
+          <p class="category">빵</p>
+          <h3>꾸덕 맘모스</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">7,000원</p>
+            <p class="old-price">7,800원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="디저트">
+          <div class="thumb">
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/32320128/pexels-photo-32320128.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="골드 버터 휘낭시에">
+          </div>
+          <p class="category">디저트</p>
+          <h3>골드 버터 휘낭시에</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">3,500원</p>
+            <p class="old-price">3,900원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="빵">
+          <div class="thumb">
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/13976570/pexels-photo-13976570.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="슈크림빵">
+          </div>
+          <p class="category">빵</p>
+          <h3>슈크림빵</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">3,500원</p>
+            <p class="old-price">3,900원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="빵">
+          <div class="thumb">
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/1571074/pexels-photo-1571074.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="앙버터 프레첼">
+          </div>
+          <p class="category">빵</p>
+          <h3>앙버터 프레첼</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">4,100원</p>
+            <p class="old-price">4,600원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="디저트">
+          <div class="thumb">
+            <span class="badge new">NEW</span>
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/5847103/pexels-photo-5847103.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="임자만난쿠키">
+          </div>
+          <p class="category">디저트</p>
+          <h3>임자만난쿠키</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">5,400원</p>
+            <p class="old-price">6,000원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="디저트">
+          <div class="thumb">
+            <span class="badge new">NEW</span>
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/32268801/pexels-photo-32268801.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="솔티카라멜 휘낭시에">
+          </div>
+          <p class="category">디저트</p>
+          <h3>솔티카라멜 휘낭시에</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">3,300원</p>
+            <p class="old-price">3,700원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="빵">
+          <div class="thumb">
+            <span class="badge hot">HOT</span>
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/12097597/pexels-photo-12097597.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="메론 소보로빵">
+          </div>
+          <p class="category">빵</p>
+          <h3>메론 소보로빵</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">5,400원</p>
+            <p class="old-price">6,000원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
+        <div class="card" data-cat="디저트">
+          <div class="thumb">
+            <span class="badge new">NEW</span>
+            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
+            <img class="photo" src="https://images.pexels.com/photos/10174841/pexels-photo-10174841.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="얼그레이 마들렌">
+          </div>
+          <p class="category">디저트</p>
+          <h3>얼그레이 마들렌</h3>
+          <div class="price-row">
+            <span class="sale">10%</span>
+            <p class="new-price">3,100원</p>
+            <p class="old-price">3,500원</p>
+          </div>
+          <button class="buy" onclick="showAlert()">장바구니</button>
+        </div>
+
       </div>
 
-      <div class="card" data-cat="디저트">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <img class="photo" src="https://images.pexels.com/photos/14133144/pexels-photo-14133144.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="레드벨벳 쿠키">
-        <p class="category">디저트</p>
-        <h3>레드벨벳 쿠키</h3>
-        <p class="old-price">6,000원</p>
-        <p class="new-price">5,400원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="디저트" data-best="yes">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <p class="best">★ Best</p>
-        <img class="photo" src="https://images.pexels.com/photos/38594732/pexels-photo-38594732.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="말차 가나슈 쿠키">
-        <p class="category">디저트</p>
-        <h3>말차 가나슈 쿠키</h3>
-        <p class="old-price">6,000원</p>
-        <p class="new-price">5,400원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="빵">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <img class="photo" src="https://images.pexels.com/photos/18133619/pexels-photo-18133619.png?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="꾸덕 맘모스">
-        <p class="category">빵</p>
-        <h3>꾸덕 맘모스</h3>
-        <p class="old-price">7,800원</p>
-        <p class="new-price">7,000원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="디저트">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <img class="photo" src="https://images.pexels.com/photos/32320128/pexels-photo-32320128.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="골드 버터 휘낭시에">
-        <p class="category">디저트</p>
-        <h3>골드 버터 휘낭시에</h3>
-        <p class="old-price">3,900원</p>
-        <p class="new-price">3,500원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="빵">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <img class="photo" src="https://images.pexels.com/photos/13976570/pexels-photo-13976570.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="슈크림빵">
-        <p class="category">빵</p>
-        <h3>슈크림빵</h3>
-        <p class="old-price">3,900원</p>
-        <p class="new-price">3,500원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="빵">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <img class="photo" src="https://images.pexels.com/photos/1571074/pexels-photo-1571074.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="앙버터 프레첼">
-        <p class="category">빵</p>
-        <h3>앙버터 프레첼</h3>
-        <p class="old-price">4,600원</p>
-        <p class="new-price">4,100원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="디저트">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <p class="new">★ NEW</p>
-        <img class="photo" src="https://images.pexels.com/photos/5847103/pexels-photo-5847103.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="임자만난쿠키">
-        <p class="category">디저트</p>
-        <h3>임자만난쿠키</h3>
-        <p class="old-price">6,000원</p>
-        <p class="new-price">5,400원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="디저트">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <p class="new">★ NEW</p>
-        <img class="photo" src="https://images.pexels.com/photos/32268801/pexels-photo-32268801.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="솔티카라멜 휘낭시에">
-        <p class="category">디저트</p>
-        <h3>솔티카라멜 휘낭시에</h3>
-        <p class="old-price">3,700원</p>
-        <p class="new-price">3,300원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="빵">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <p class="hot">★ HOT</p>
-        <img class="photo" src="https://images.pexels.com/photos/12097597/pexels-photo-12097597.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="메론 소보로빵">
-        <p class="category">빵</p>
-        <h3>메론 소보로빵</h3>
-        <p class="old-price">6,000원</p>
-        <p class="new-price">5,400원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
-
-      <div class="card" data-cat="디저트">
-        <button class="heart" onclick="toggleHeart(this)">&#129293;</button>
-        <p class="new">★ NEW</p>
-        <img class="photo" src="https://images.pexels.com/photos/10174841/pexels-photo-10174841.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="얼그레이 마들렌">
-        <p class="category">디저트</p>
-        <h3>얼그레이 마들렌</h3>
-        <p class="old-price">3,500원</p>
-        <p class="new-price">3,100원</p>
-        <button onclick="showAlert()">장바구니</button>
-      </div>
+      <p id="no-result">찾으시는 상품이 없어요. 다른 이름으로 검색해 보세요.</p>
 
     </div>
   </div>
 
-
-  <!-- 쇼핑몰 소개 -->
+  <!-- ===== 쇼핑몰 소개 ===== -->
   <div class="about">
-    <h2>브레드피트와나 이야기</h2>
+    <div class="inner">
 
-    <p class="about-text">
-      내가 먹는 것이 내가 됩니다.<br>
-      좋은 재료를 직접 검증해 좋은 재료로만 만들었습니다.<br>
-      믿고 방문해 주셔서 감사합니다.
-    </p>
+      <p class="about-text">
+        내가 먹는 것이 내가 됩니다.<br>
+        <span>좋은 재료를 직접 검증해 좋은 재료로만 만들었습니다.<br>
+        믿고 방문해 주셔서 감사합니다.</span>
+      </p>
 
-    <!-- 안내 3개 -->
-    <div class="info-box">
-
-      <div class="info">
-        <div class="emoji">🌾</div>
-        <h3>좋은 재료</h3>
-        <p>매일 아침 직접 고른<br>재료만 사용합니다</p>
-      </div>
-
-      <div class="info">
-        <div class="emoji">🚚</div>
-        <h3>당일 배송</h3>
-        <p>오늘 구운 빵을<br>오늘 받아보세요</p>
-      </div>
-
-      <div class="info">
-        <div class="emoji">💬</div>
-        <h3>주문 문의</h3>
-        <p>평일 오전 10시 ~ 오후 6시<br>언제든 연락 주세요</p>
+      <div class="info-box">
+        <div class="info">
+          <p class="num">01</p>
+          <h3>좋은 재료</h3>
+          <p>매일 아침 직접 고른 재료만 사용합니다</p>
+        </div>
+        <div class="info">
+          <p class="num">02</p>
+          <h3>당일 배송</h3>
+          <p>오늘 구운 빵을 오늘 받아보세요</p>
+        </div>
+        <div class="info">
+          <p class="num">03</p>
+          <h3>주문 문의</h3>
+          <p>평일 오전 10시 ~ 오후 6시 언제든 연락 주세요</p>
+        </div>
       </div>
 
     </div>
   </div>
-  <!-- 맨 아래: 연락처 안내 -->
+
+  <!-- ===== 맨 아래 ===== -->
   <footer>
+    <div class="inner">
 
-    <!-- 하단 메뉴 4개 -->
-    <div class="foot-menu">
-      <a href="#" onclick="showAlert()">이용안내</a>
-      <a href="#" onclick="showAlert()">배송조회</a>
-      <a href="#" onclick="showAlert()">교환·반품</a>
-      <a href="#" onclick="showAlert()">자주 묻는 질문</a>
+      <div class="foot-menu">
+        <a href="#" onclick="showAlert()">이용안내</a>
+        <a href="#" onclick="showAlert()">배송조회</a>
+        <a href="#" onclick="showAlert()">교환·반품</a>
+        <a href="#" onclick="showAlert()">자주 묻는 질문</a>
+      </div>
+
+      <div class="foot-info">
+        <p class="shop-name">브레드피트와나</p>
+        <p>문의전화 010-1234-5678</p>
+        <p>상담시간 평일 오전 10시 ~ 오후 6시</p>
+        <p>breadwife@abcd.cor</p>
+      </div>
+
     </div>
-
-    <!-- 가게 정보 -->
-    <div class="foot-info">
-      <p class="shop-name">브레드피트와나</p>
-      <p>📞 문의전화 : 010-1234-5678</p>
-      <p>🕘 상담시간 : 평일 오전 10시 ~ 오후 6시</p>
-      <p>📧 breadwife@abcd.cor</p>
-    </div>
-
   </footer>
-  </div>
 
   <script>
     // 버튼을 누르면 알림창이 뜹니다
     function showAlert() {
-      alert("준비 중입니다! 곧 만나요 🥐");
+      alert("준비 중입니다! 곧 만나요");
     }
 
-    // 찜한 상품 개수를 세는 상자
+    // ===== 하트 찜하기 =====
+
     var 찜개수 = 0;
 
-    // 하트를 누르면 찜하기 / 찜 풀기
     function toggleHeart(하트버튼) {
-
       if (하트버튼.classList.contains("on")) {
-        // 이미 찜한 상태 -> 찜 풀기
         하트버튼.classList.remove("on");
-        하트버튼.innerHTML = "&#129293;";   // 빈 하트
+        하트버튼.innerHTML = "&#9825;";   // 빈 하트
         찜개수 = 찜개수 - 1;
       } else {
-        // 찜 안 한 상태 -> 찜하기
         하트버튼.classList.add("on");
-        하트버튼.innerHTML = "&#10084;&#65039;";   // 빨간 하트
+        하트버튼.innerHTML = "&#9829;";   // 채워진 하트
         찜개수 = 찜개수 + 1;
       }
-
-      // 맨 위 숫자를 바꿔줍니다
       document.getElementById("zzim-count").textContent = 찜개수;
-    }
-
-    // 지금 선택된 분류를 기억해 둡니다
-    var 지금분류 = "전체";
-
-    // 메뉴를 누르면 그 분류를 기억하고 상품을 다시 보여줍니다
-    function showCategory(분류, 누른버튼) {
-      지금분류 = 분류;
-      showProducts();
-
-      // 메뉴 버튼 색을 바꿉니다
-      var 메뉴들 = document.querySelectorAll("nav a");
-      for (var j = 0; j < 메뉴들.length; j++) {
-        메뉴들[j].classList.remove("active");
-      }
-      누른버튼.classList.add("active");
     }
 
     // ===== 초성 검색 =====
@@ -646,18 +854,16 @@
       var 결과 = "";
       for (var i = 0; i < 글.length; i++) {
         var 코드 = 글.charCodeAt(i);
-
-        // 가(0xAC00) ~ 힣(0xD7A3) 사이면 한글입니다
         if (코드 >= 0xAC00 && 코드 <= 0xD7A3) {
           결과 = 결과 + 초성목록[Math.floor((코드 - 0xAC00) / 588)];
         } else {
-          결과 = 결과 + 글.charAt(i);   // 한글이 아니면 그대로
+          결과 = 결과 + 글.charAt(i);
         }
       }
       return 결과;
     }
 
-    // 친 글자가 초성만으로 되어 있는지 확인합니다. 예) "ㅋㄹ" -> true
+    // 친 글자가 초성만으로 되어 있는지 확인합니다
     function 초성만인가(글) {
       var 공백뺀글 = 글.replace(/ /g, "");
       if (공백뺀글 === "") {
@@ -677,24 +883,33 @@
       var 검색 = 검색어.replace(/ /g, "");
 
       if (검색 === "") {
-        return true;        // 아무것도 안 쳤으면 전부 보여줍니다
+        return true;
       }
-
-      // 초성만 쳤으면 초성끼리 비교합니다
       if (초성만인가(검색)) {
         return 초성뽑기(이름).indexOf(검색) !== -1;
       }
-
-      // 아니면 이름 그대로 비교합니다
       return 이름.indexOf(검색) !== -1;
+    }
+
+    // ===== 분류 + 검색 =====
+
+    var 지금분류 = "전체";
+
+    // 카테고리를 누르면 그 분류를 기억하고 상품을 다시 보여줍니다
+    function showCategory(분류, 누른버튼) {
+      지금분류 = 분류;
+      showProducts();
+
+      var 칩들 = document.querySelectorAll(".chip");
+      for (var j = 0; j < 칩들.length; j++) {
+        칩들[j].classList.remove("active");
+      }
+      누른버튼.classList.add("active");
     }
 
     // 분류와 검색어를 함께 확인해서 상품을 보여줍니다
     function showProducts() {
-
-      // 검색창에 친 글자를 가져옵니다 (대소문자 구분 없앰)
       var 검색어 = document.getElementById("search-box").value.toLowerCase();
-
       var 카드들 = document.querySelectorAll(".card");
       var 보인개수 = 0;
 
@@ -724,7 +939,10 @@
         }
       }
 
-      // 보이는 상품이 하나도 없으면 안내 문구를 띄웁니다
+      // 보이는 상품 개수를 알려줍니다
+      document.getElementById("shown-count").textContent = 보인개수;
+
+      // 하나도 없으면 안내 문구를 띄웁니다
       var 안내문구 = document.getElementById("no-result");
       if (보인개수 === 0) {
         안내문구.style.display = "block";
