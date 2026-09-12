@@ -21,6 +21,13 @@
       background-attachment: fixed;
     }
 
+    /* 전체를 감싸는 상자 - 양옆으로 배경 사진이 보입니다 */
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+    }
+
     /* 맨 위 - 쇼핑몰 이름 */
     header {
       background-color: #6F4E37;
@@ -58,11 +65,15 @@
       border-radius: 20px;
     }
 
-    /* 큰 배너 */
+    /* 큰 배너 - 빵집 사진 위에 글씨를 얹습니다 */
     .banner {
-      background-color: rgba(232, 213, 196, 0.93);
+      background-image: linear-gradient(rgba(60, 40, 28, 0.55), rgba(60, 40, 28, 0.55)),
+                        url("https://images.pexels.com/photos/32459865/pexels-photo-32459865.jpeg?auto=compress&cs=tinysrgb&w=1400");
+      background-size: cover;
+      background-position: center;
+      color: white;
       text-align: center;
-      padding: 30px 20px;
+      padding: 55px 20px;
     }
     .banner .emoji {
       font-size: 50px;
@@ -257,6 +268,8 @@
 </head>
 
 <body>
+  <!-- 전체를 감싸는 상자 - 양옆으로 배경 사진이 보입니다 -->
+  <div class="wrap">
 
   <!-- 맨 위: 쇼핑몰 이름과 한 줄 소개 -->
   <header>
@@ -457,6 +470,7 @@
     </div>
 
   </footer>
+  </div>
 
   <script>
     // 버튼을 누르면 알림창이 뜹니다
