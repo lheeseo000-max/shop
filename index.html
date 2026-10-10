@@ -1066,6 +1066,54 @@
       background-color: #BF3F1E;
     }
 
+    /* 주문서는 1단계(적기) / 2단계(확인) 두 쪽으로 나뉩니다 */
+    .order-step {
+      display: none;
+    }
+    .order-page.step1 #order-step1,
+    .order-page.step2 #order-step2 {
+      display: block;
+    }
+
+    /* 2단계 : 받는 분 정보를 다시 보여 주는 목록 */
+    .confirm-list {
+      margin: 0;
+    }
+    .confirm-row {
+      display: flex;
+      gap: 16px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .confirm-row:last-child {
+      border-bottom: none;
+    }
+    .confirm-row dt {
+      flex: 0 0 70px;
+      margin: 0;
+      padding-top: 1px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .confirm-row dd {
+      min-width: 0;
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.55;
+      white-space: pre-wrap;   /* 주소에 줄바꿈이 있으면 그대로 보입니다 */
+      word-break: break-word;
+    }
+
+    /* 2단계 : 상품 옆 수량 */
+    .order-line .qt-only {
+      flex-shrink: 0;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
     @media (max-width: 860px) {
       .order-grid { grid-template-columns: 1fr; }
       .order-side { position: static; }
@@ -1375,42 +1423,75 @@
   <div class="order-page" id="order-page">
     <div class="inner">
 
-      <div class="order-head">
-        <button class="back-btn" onclick="주문서에서장바구니로()">&larr; 장바구니로 돌아가기</button>
-        <h2>주문서</h2>
-        <p>받는 분 정보를 적어 주시면 배송을 준비합니다</p>
-      </div>
+      <!-- 1단계 : 받는 분 정보 적기 -->
+      <div class="order-step" id="order-step1">
 
-      <div class="order-grid">
-
-        <!-- 왼쪽 : 받는 분 정보 -->
-        <div class="order-box order-form">
-          <h3 class="block-title">받는 분 정보</h3>
-
-          <label class="field-label" for="recv-name">받는 분 이름</label>
-          <input type="text" id="recv-name" class="form-input" placeholder="홍길동"
-                 oninput="칸입력(this)" onkeyup="엔터로실행(event, 주문서확인)">
-
-          <label class="field-label" for="recv-tel">연락처</label>
-          <input type="tel" id="recv-tel" class="form-input" placeholder="010-1234-5678"
-                 oninput="칸입력(this)" onkeyup="엔터로실행(event, 주문서확인)">
-
-          <label class="field-label" for="recv-addr">주소</label>
-          <textarea id="recv-addr" class="form-input addr-input" oninput="칸입력(this)"
-                    placeholder="받으실 주소를 한 번에 적어 주세요 (건물·동·호수까지)"></textarea>
-
-          <p class="form-msg" id="order-msg"></p>
+        <div class="order-head">
+          <button class="back-btn" onclick="주문서에서장바구니로()">&larr; 장바구니로 돌아가기</button>
+          <h2>주문서</h2>
+          <p>받는 분 정보를 적어 주시면 배송을 준비합니다</p>
         </div>
 
-        <!-- 오른쪽 : 주문 내역 -->
-        <div class="order-box order-side">
-          <h3 class="block-title">주문 내역</h3>
-          <div class="order-lines" id="order-lines"></div>
-          <div class="order-calc" id="order-calc"></div>
-          <button class="order-submit" onclick="주문서확인()">주문하기</button>
+        <div class="order-grid">
+
+          <!-- 왼쪽 : 받는 분 정보 -->
+          <div class="order-box order-form">
+            <h3 class="block-title">받는 분 정보</h3>
+
+            <label class="field-label" for="recv-name">받는 분 이름</label>
+            <input type="text" id="recv-name" class="form-input" placeholder="홍길동"
+                   oninput="칸입력(this)" onkeyup="엔터로실행(event, 주문서확인)">
+
+            <label class="field-label" for="recv-tel">연락처</label>
+            <input type="tel" id="recv-tel" class="form-input" placeholder="010-1234-5678"
+                   oninput="칸입력(this)" onkeyup="엔터로실행(event, 주문서확인)">
+
+            <label class="field-label" for="recv-addr">주소</label>
+            <textarea id="recv-addr" class="form-input addr-input" oninput="칸입력(this)"
+                      placeholder="받으실 주소를 한 번에 적어 주세요 (건물·동·호수까지)"></textarea>
+
+            <p class="form-msg" id="order-msg"></p>
+          </div>
+
+          <!-- 오른쪽 : 주문 내역 -->
+          <div class="order-box order-side">
+            <h3 class="block-title">주문 내역</h3>
+            <div class="order-lines" id="order-lines"></div>
+            <div class="order-calc" id="order-calc"></div>
+            <button class="order-submit" onclick="주문서확인()">다음</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2단계 : 주문 내용 확인 -->
+      <div class="order-step" id="order-step2">
+
+        <div class="order-head">
+          <button class="back-btn" onclick="확인에서주문서로()">&larr; 다시 적기</button>
+          <h2>주문 확인</h2>
+          <p>이대로 주문하시겠습니까?</p>
         </div>
 
+        <div class="order-grid">
+
+          <!-- 왼쪽 : 받는 분 -->
+          <div class="order-box">
+            <h3 class="block-title">받는 분</h3>
+            <dl class="confirm-list" id="confirm-who"></dl>
+          </div>
+
+          <!-- 오른쪽 : 주문할 상품과 합계 -->
+          <div class="order-box order-side">
+            <h3 class="block-title">주문할 상품</h3>
+            <div class="order-lines" id="confirm-lines"></div>
+            <div class="order-calc" id="confirm-calc"></div>
+            <button class="order-submit" onclick="최종주문()">이대로 주문하기</button>
+          </div>
+
+        </div>
       </div>
+
     </div>
   </div>
 
@@ -2025,13 +2106,23 @@
     // 주문서 (전체 화면)
     //
     // body 에 ordering 을 붙이면 쇼핑 화면이 숨고 주문서가 보입니다.
-    // 지금은 화면과 입력 확인까지만 하고, 저장은 다음 단계에서 연결합니다.
+    // 1단계는 받는 분 정보 적기, 2단계는 주문 내용 확인입니다.
+    // 지금은 확인 화면까지만 하고, 저장은 다음 단계에서 연결합니다.
     // ===================================================
+
+    // 1단계 / 2단계 중 하나만 보여 줍니다
+    function 단계보이기(단계) {
+      var 주문쪽 = document.getElementById("order-page");
+      주문쪽.classList.remove("step1", "step2");
+      주문쪽.classList.add(단계);
+      window.scrollTo(0, 0);
+    }
 
     function 주문서열기() {
       document.body.classList.add("ordering");
       document.getElementById("order-msg").textContent = "";
-      window.scrollTo(0, 0);
+      표시지우기();
+      단계보이기("step1");
       document.getElementById("recv-name").focus();
     }
 
@@ -2045,8 +2136,15 @@
       장바구니열기();
     }
 
-    // 무엇을 얼마에 주문하는지 오른쪽에 보여 줍니다
-    function 주문요약그리기() {
+    // 확인 화면에서 다시 적기로 돌아갑니다
+    function 확인에서주문서로() {
+      주문요약그리기();   // 그 사이 장바구니가 바뀌었을 수도 있어 다시 그립니다
+      단계보이기("step1");
+      document.getElementById("recv-name").focus();
+    }
+
+    // 담긴 상품과 금액을 원하는 자리에 그려 줍니다
+    function 주문내역그리기(줄칸, 계산칸, 합계이름, 수량만) {
       var 줄 = "";
       var 상품금액 = 0;
 
@@ -2055,27 +2153,48 @@
         var 줄금액 = 상품.단가 * 상품.개수;
         상품금액 = 상품금액 + 줄금액;
 
-        줄 = 줄
-          + '<div class="order-line">'
-          +   '<span class="nm">' + 글자안전(상품.이름)
-          +     '<span class="qt"> × ' + 상품.개수 + '</span>'
-          +   '</span>'
-          +   '<span class="am">' + 돈표시(줄금액) + '원</span>'
-          + '</div>';
+        if (수량만) {
+          // 확인 화면 : 상품 이름과 수량만 보여 줍니다
+          줄 = 줄
+            + '<div class="order-line">'
+            +   '<span class="nm">' + 글자안전(상품.이름) + '</span>'
+            +   '<span class="qt-only">' + 상품.개수 + '개</span>'
+            + '</div>';
+        } else {
+          줄 = 줄
+            + '<div class="order-line">'
+            +   '<span class="nm">' + 글자안전(상품.이름)
+            +     '<span class="qt"> × ' + 상품.개수 + '</span>'
+            +   '</span>'
+            +   '<span class="am">' + 돈표시(줄금액) + '원</span>'
+            + '</div>';
+        }
       }
-      document.getElementById("order-lines").innerHTML = 줄;
+      document.getElementById(줄칸).innerHTML = 줄;
 
       var 배송비 = 배송비계산(상품금액);
       var 배송비글 = (배송비 === 0) ? "무료" : (돈표시(배송비) + "원");
 
-      document.getElementById("order-calc").innerHTML =
+      document.getElementById(계산칸).innerHTML =
           '<div class="calc-row"><span>상품 금액</span><b>' + 돈표시(상품금액) + '원</b></div>'
         + '<div class="calc-row"><span>배송비</span><b>' + 배송비글 + '</b></div>'
-        + '<div class="calc-total"><span>총 결제 금액</span><b>'
+        + '<div class="calc-total"><span>' + 합계이름 + '</span><b>'
         +   돈표시(상품금액 + 배송비) + '원</b></div>';
     }
 
-    // 적어 넣은 내용을 확인합니다 (저장은 아직 하지 않습니다)
+    // 1단계 오른쪽에 주문 내역을 그립니다
+    function 주문요약그리기() {
+      주문내역그리기("order-lines", "order-calc", "총 결제 금액", false);
+    }
+
+    // 2단계에 받는 분 정보를 다시 보여 줍니다
+    function 받는분그리기(이름, 연락처, 주소) {
+      document.getElementById("confirm-who").innerHTML =
+          '<div class="confirm-row"><dt>이름</dt><dd>' + 글자안전(이름) + '</dd></div>'
+        + '<div class="confirm-row"><dt>연락처</dt><dd>' + 글자안전(연락처) + '</dd></div>'
+        + '<div class="confirm-row"><dt>주소</dt><dd>' + 글자안전(주소) + '</dd></div>';
+    }
+
     // 입력칸에 글자를 넣으면 빨간 표시를 지웁니다.
     // 연락처 칸은 숫자와 - 만 남깁니다.
     function 칸입력(칸) {
@@ -2106,7 +2225,7 @@
       document.getElementById(칸이름들[0]).focus();
     }
 
-    // 적어 넣은 내용을 확인합니다 (저장은 아직 하지 않습니다)
+    // 다 적었으면 확인 화면으로 넘어갑니다
     function 주문서확인() {
       표시지우기();
 
@@ -2148,7 +2267,16 @@
         return;
       }
 
-      안내보이기("order-msg", "입력을 모두 확인했어요. 주문 저장은 다음 단계에서 연결할게요.", true);
+      // 다 적었으니 주문 내용을 한 번 더 보여 줍니다
+      안내보이기("order-msg", "", true);
+      받는분그리기(이름, 연락처, 주소);
+      주문내역그리기("confirm-lines", "confirm-calc", "전체 합계 금액", true);
+      단계보이기("step2");
+    }
+
+    // 확인 화면의 주문하기 (저장은 아직 연결하지 않았습니다)
+    function 최종주문() {
+      짧은알림("다음 시간에 완성됩니다");
     }
 
     // 맨 위 장바구니를 누르면 팝업이 뜹니다
