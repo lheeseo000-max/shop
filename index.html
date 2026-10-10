@@ -875,6 +875,80 @@
     }
 
     /* ===================================================
+       주문서 팝업
+       =================================================== */
+    .modal.order-modal {
+      max-width: 460px;
+      padding: 32px 28px 28px 28px;
+    }
+
+    /* 무엇을 얼마에 주문하는지 알려 주는 줄 */
+    .order-sum {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding: 13px 16px;
+      background-color: #4A423C;
+      border-radius: 12px;
+    }
+    .order-sum .what {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      color: #CFC6BC;
+    }
+    .order-sum .howmuch {
+      white-space: nowrap;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: white;
+    }
+
+    /* 입력칸 위에 붙는 작은 이름표 */
+    .field-label {
+      display: block;
+      margin: 0 0 6px 2px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+    }
+    .field-label + .form-input {
+      margin-bottom: 16px;
+    }
+
+    /* 주소는 한 칸에 길게 적을 수 있게 합니다 */
+    .addr-input {
+      min-height: 74px;
+      line-height: 1.55;
+      resize: vertical;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 9px;
+    }
+    .order-actions .form-btn {
+      flex: 1;
+    }
+    .form-btn.ghost {
+      background-color: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .form-btn.ghost:hover {
+      background-color: white;
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    /* ===================================================
        짧은 알림 (잠깐 떴다가 저절로 사라집니다)
        =================================================== */
     .toast {
@@ -1168,6 +1242,39 @@
 
       <!-- 주문 버튼 (담긴 상품이 없으면 흐리게, 눌리지 않습니다) -->
       <button class="order-btn" id="order-btn" onclick="주문하기()" disabled>주문하기</button>
+
+    </div>
+  </div>
+
+  <!-- ===== 주문서 팝업 ===== -->
+  <div class="modal-bg" id="order-bg" onclick="주문서바깥닫기(event)">
+    <div class="modal order-modal">
+      <button class="modal-close" onclick="주문서닫기()">&times;</button>
+
+      <h3>주문서</h3>
+      <p class="modal-sub">받는 분 정보를 적어 주세요</p>
+
+      <!-- 무엇을 주문하는지 (장바구니에서 읽어 와 보여 주기만 합니다) -->
+      <div class="order-sum" id="order-sum"></div>
+
+      <label class="field-label" for="recv-name">받는 분 이름</label>
+      <input type="text" id="recv-name" class="form-input" placeholder="홍길동"
+             onkeyup="엔터로실행(event, 주문서확인)">
+
+      <label class="field-label" for="recv-tel">연락처</label>
+      <input type="tel" id="recv-tel" class="form-input" placeholder="010-1234-5678"
+             onkeyup="엔터로실행(event, 주문서확인)">
+
+      <label class="field-label" for="recv-addr">주소</label>
+      <textarea id="recv-addr" class="form-input addr-input"
+                placeholder="받으실 주소를 한 번에 적어 주세요 (건물·동·호수까지)"></textarea>
+
+      <p class="form-msg" id="order-msg"></p>
+
+      <div class="order-actions">
+        <button class="form-btn ghost" onclick="주문서에서장바구니로()">장바구니로</button>
+        <button class="form-btn" onclick="주문서확인()">주문하기</button>
+      </div>
 
     </div>
   </div>
@@ -1752,59 +1859,102 @@
       상자.innerHTML = 글;
     }
 
-    // 주문 버튼 : 주문 내역을 Supabase에 저장하고 장바구니를 비웁니다
+    // 장바구니의 주문하기 : 주문서 화면을 엽니다
+    // (로그인하지 않았거나 장바구니가 비어 있으면 갈 수 없습니다)
     function 주문하기() {
       if (장바구니목록.length === 0) {
         return;
       }
 
       sb.auth.getUser().then(function (결과) {
-        var 사용자 = 결과.data.user;
-
-        // 로그인하지 않으면 주문 내역을 저장할 수 없습니다
-        if (!사용자) {
+        // 로그인하지 않으면 주문서로 갈 수 없습니다
+        if (!결과.data.user) {
           장바구니닫기();
           openModal("login");
           안내보이기("login-msg", "주문하려면 먼저 로그인해 주세요.", false);
           return;
         }
 
-        var 상품금액 = 0;
-        var 보낼상품 = [];
-        for (var i = 0; i < 장바구니목록.length; i++) {
-          var 상품 = 장바구니목록[i];
-          상품금액 = 상품금액 + 상품.단가 * 상품.개수;
-          보낼상품.push({ name: 상품.이름, price: 상품.단가, qty: 상품.개수 });
+        // 불러오는 사이에 장바구니가 비워졌을 수도 있어 한 번 더 확인합니다
+        if (장바구니목록.length === 0) {
+          return;
         }
-        var 배송비 = 배송비계산(상품금액);
-        var 낼금액 = 상품금액 + 배송비;
 
-        // 저장이 끝날 때까지 버튼을 잠가 둡니다 (두 번 눌리는 것 방지)
-        var 버튼 = document.getElementById("order-btn");
-        버튼.disabled = true;
-        버튼.textContent = "주문 중...";
-
-        sb.from("orders").insert({
-          user_id: 사용자.id,
-          items: 보낼상품,
-          goods_total: 상품금액,
-          ship_fee: 배송비,
-          total: 낼금액
-        }).then(function (저장결과) {
-          버튼.textContent = "주문하기";
-
-          if (저장결과.error) {
-            버튼.disabled = false;
-            짧은알림("주문 저장에 실패했어요: " + 저장결과.error.message);
-            return;
-          }
-
-          장바구니목록 = [];
-          장바구니그리기();
-          장바구니닫기();
-          짧은알림("총 " + 돈표시(낼금액) + "원 주문이 접수되었어요");
-        });
+        주문요약그리기();
+        장바구니닫기();
+        주문서열기();
       });
+    }
+
+    // ===================================================
+    // 주문서
+    //
+    // 지금은 화면과 입력 확인까지만 합니다.
+    // 주문 저장은 다음 단계에서 연결합니다.
+    // ===================================================
+
+    function 주문서열기() {
+      document.getElementById("order-bg").classList.add("open");
+      document.getElementById("order-msg").textContent = "";
+      document.getElementById("recv-name").focus();
+    }
+
+    function 주문서닫기() {
+      document.getElementById("order-bg").classList.remove("open");
+    }
+
+    // 팝업 바깥쪽(어두운 곳)을 누르면 닫힙니다
+    function 주문서바깥닫기(이벤트) {
+      if (이벤트.target.id === "order-bg") {
+        주문서닫기();
+      }
+    }
+
+    // 주문서에서 장바구니로 되돌아갑니다
+    function 주문서에서장바구니로() {
+      주문서닫기();
+      장바구니열기();
+    }
+
+    // 무엇을 얼마에 주문하는지 주문서 위쪽에 보여 줍니다
+    function 주문요약그리기() {
+      var 개수 = 0;
+      var 상품금액 = 0;
+      for (var i = 0; i < 장바구니목록.length; i++) {
+        개수 = 개수 + 장바구니목록[i].개수;
+        상품금액 = 상품금액 + 장바구니목록[i].단가 * 장바구니목록[i].개수;
+      }
+
+      var 무엇 = 장바구니목록[0].이름;
+      if (장바구니목록.length > 1) {
+        무엇 = 무엇 + " 외 " + (장바구니목록.length - 1) + "종";
+      }
+
+      document.getElementById("order-sum").innerHTML =
+          '<span class="what">' + 글자안전(무엇) + ' · 모두 ' + 개수 + '개</span>'
+        + '<span class="howmuch">' + 돈표시(상품금액 + 배송비계산(상품금액)) + '원</span>';
+    }
+
+    // 적어 넣은 내용을 확인합니다 (저장은 아직 하지 않습니다)
+    function 주문서확인() {
+      var 이름 = document.getElementById("recv-name").value.trim();
+      var 연락처 = document.getElementById("recv-tel").value.trim();
+      var 주소 = document.getElementById("recv-addr").value.trim();
+
+      if (이름 === "") {
+        안내보이기("order-msg", "받는 분 이름을 적어 주세요.", false);
+        return;
+      }
+      if (연락처.replace(/[^0-9]/g, "").length < 9) {
+        안내보이기("order-msg", "연락처를 정확히 적어 주세요.", false);
+        return;
+      }
+      if (주소.length < 5) {
+        안내보이기("order-msg", "주소를 좀 더 자세히 적어 주세요.", false);
+        return;
+      }
+
+      안내보이기("order-msg", "입력을 모두 확인했어요. 주문 저장은 다음 단계에서 연결할게요.", true);
     }
 
     // 맨 위 장바구니를 누르면 팝업이 뜹니다
