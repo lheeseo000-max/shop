@@ -73,6 +73,27 @@
       color: var(--accent);
     }
 
+    /* 가게 이름을 누르면 처음 화면으로 돌아갑니다 */
+    .logo-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      letter-spacing: inherit;
+      color: inherit;
+      cursor: pointer;
+      transition: opacity 0.18s;
+    }
+    .logo-btn:hover {
+      opacity: 0.65;
+    }
+    .logo-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+
     /* 찜 개수 */
     .zzim-info {
       display: flex;
@@ -1264,7 +1285,7 @@
   <!-- ===== 맨 위 고정 바 ===== -->
   <div class="topbar">
     <div class="inner">
-      <h1 class="logo">브레드피트<em>와나</em></h1>
+      <h1 class="logo"><button class="logo-btn" onclick="홈으로()" title="처음 화면으로">브레드피트<em>와나</em></button></h1>
 
       <div class="top-right">
         <p class="zzim-info">
@@ -2128,6 +2149,14 @@
 
     function 주문서닫기() {
       document.body.classList.remove("ordering");
+    }
+
+    // 왼쪽 위 가게 이름을 누르면 처음 화면으로 돌아갑니다
+    function 홈으로() {
+      주문서닫기();     // 주문서를 보고 있었다면 닫습니다
+      장바구니닫기();
+      closeModal();     // 로그인 / 회원가입 팝업도 닫습니다
+      window.scrollTo(0, 0);
     }
 
     // 주문서에서 장바구니로 되돌아갑니다
