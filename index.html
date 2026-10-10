@@ -148,9 +148,9 @@
       border-color: var(--accent);
       color: white;
     }
-    /* 로그인한 내 이메일 (버튼과 높이가 맞는 알약 모양) */
-    .user-email {
-      max-width: 190px;
+    /* 로그인 환영 문구 (버튼과 높이가 맞는 알약 모양) */
+    .user-welcome {
+      max-width: 210px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -160,6 +160,9 @@
       background-color: rgba(22, 17, 14, 0.05);
       padding: 7px 13px;
       border-radius: 100px;
+    }
+    .user-welcome #welcome-name {
+      color: var(--accent);
     }
 
     /* 팝업 배경 (평소에는 숨김) */
@@ -954,7 +957,8 @@
       .chip { flex: 0 0 auto; }
       .card-box { grid-template-columns: repeat(2, 1fr); gap: 26px 14px; }
       .about-text { font-size: 19px; }
-      .user-email { max-width: 110px; }
+      .user-welcome { max-width: 150px; }
+      .welcome-tail { display: none; }   /* 좁은 화면에서는 이름만 */
     }
   </style>
 </head>
@@ -981,9 +985,9 @@
           <button class="auth-btn primary" onclick="openModal('login')">로그인</button>
         </div>
 
-        <!-- 로그인 후 : 내 이메일 + 로그아웃 -->
+        <!-- 로그인 후 : 환영 문구 + 로그아웃 -->
         <div class="auth-area" id="auth-in" style="display: none;">
-          <span class="user-email" id="user-email"></span>
+          <span class="user-welcome" id="user-welcome"><span id="welcome-name"></span><span class="welcome-tail"> 환영합니다</span></span>
           <button class="auth-btn" onclick="logout()">로그아웃</button>
         </div>
       </div>
@@ -1654,10 +1658,13 @@
     // 로그인 상태에 맞춰 맨 위 영역을 바꿉니다
     function 화면맞추기(세션) {
       if (세션 && 세션.user) {
-        // 로그인했을 때 : 내 이메일 + 로그아웃
-        var 이메일칸 = document.getElementById("user-email");
-        이메일칸.textContent = 세션.user.email;
-        이메일칸.title = 세션.user.email;   // 길어서 잘리면 마우스로 전체를 볼 수 있게
+        // 로그인했을 때 : "○○님 환영합니다" + 로그아웃
+        var 이름 = 세션.user.user_metadata.name;
+        if (!이름) {
+          이름 = 세션.user.email.split("@")[0];   // 이름이 없으면 메일 앞부분을 씁니다
+        }
+        document.getElementById("welcome-name").textContent = 이름 + "님";
+        document.getElementById("user-welcome").title = 이름 + "님 환영합니다";
         document.getElementById("auth-out").style.display = "none";
         document.getElementById("auth-in").style.display = "flex";
       } else {
