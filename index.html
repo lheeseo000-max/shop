@@ -435,7 +435,8 @@
     /* 오른쪽 칸에 들어가는 것들 */
     .shop-layout .section-head,
     .shop-layout .card-box,
-    .shop-layout #no-result {
+    .shop-layout #no-result,
+    .shop-layout #load-msg {
       grid-column: 2;
     }
 
@@ -694,6 +695,14 @@
       color: var(--muted);
       font-size: 15px;
     }
+    /* 상품을 불러오는 중 / 불러오지 못했을 때 */
+    #load-msg {
+      text-align: center;
+      padding: 70px 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
 
     /* ===================================================
        장바구니 팝업
@@ -989,7 +998,8 @@
       .side-filter { grid-row: auto; position: static; margin-bottom: 26px; }
       .shop-layout .section-head,
       .shop-layout .card-box,
-      .shop-layout #no-result { grid-column: 1; }
+      .shop-layout #no-result,
+      .shop-layout #load-msg { grid-column: 1; }
       .side-title { display: none; }
       .side-filter .search-area { margin-bottom: 14px; }
       .side-filter .chips { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
@@ -1070,293 +1080,13 @@
 
       <div class="section-head">
         <h2>브레드피트의 모든 빵</h2>
-        <span class="count"><span id="shown-count">18</span>개 상품</span>
+        <span class="count"><span id="shown-count">…</span>개 상품</span>
       </div>
 
-      <div class="card-box">
+      <!-- 상품 카드는 Supabase products 표에서 불러와 여기에 채워집니다 -->
+      <div class="card-box" id="card-box"></div>
 
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/13425794/pexels-photo-13425794.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="버터 크루아상">
-          </div>
-          <p class="category">빵</p>
-          <h3>버터 크루아상</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">4,000원</p>
-            <p class="old-price">4,500원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/33541423/pexels-photo-33541423.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="홋카이도 우유식빵">
-          </div>
-          <p class="category">빵</p>
-          <h3>홋카이도 우유식빵</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">5,400원</p>
-            <p class="old-price">6,000원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/14133144/pexels-photo-14133144.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="레드벨벳 쿠키">
-          </div>
-          <p class="category">디저트</p>
-          <h3>레드벨벳 쿠키</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">5,400원</p>
-            <p class="old-price">6,000원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트" data-best="yes">
-          <div class="thumb">
-            <span class="badge best">BEST</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/38594732/pexels-photo-38594732.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="말차 가나슈 쿠키">
-          </div>
-          <p class="category">디저트</p>
-          <h3>말차 가나슈 쿠키</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">5,400원</p>
-            <p class="old-price">6,000원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/18133619/pexels-photo-18133619.png?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="꾸덕 맘모스">
-          </div>
-          <p class="category">빵</p>
-          <h3>꾸덕 맘모스</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">7,000원</p>
-            <p class="old-price">7,800원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/32320128/pexels-photo-32320128.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="골드 버터 휘낭시에">
-          </div>
-          <p class="category">디저트</p>
-          <h3>골드 버터 휘낭시에</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">3,500원</p>
-            <p class="old-price">3,900원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/13976570/pexels-photo-13976570.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="슈크림빵">
-          </div>
-          <p class="category">빵</p>
-          <h3>슈크림빵</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">3,500원</p>
-            <p class="old-price">3,900원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/1571074/pexels-photo-1571074.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="앙버터 프레첼">
-          </div>
-          <p class="category">빵</p>
-          <h3>앙버터 프레첼</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">4,100원</p>
-            <p class="old-price">4,600원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/5847103/pexels-photo-5847103.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="임자만난쿠키">
-          </div>
-          <p class="category">디저트</p>
-          <h3>임자만난쿠키</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">5,400원</p>
-            <p class="old-price">6,000원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/32268801/pexels-photo-32268801.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="솔티카라멜 휘낭시에">
-          </div>
-          <p class="category">디저트</p>
-          <h3>솔티카라멜 휘낭시에</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">3,300원</p>
-            <p class="old-price">3,700원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <span class="badge hot">HOT</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/12097597/pexels-photo-12097597.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="메론 소보로빵">
-          </div>
-          <p class="category">빵</p>
-          <h3>메론 소보로빵</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">5,400원</p>
-            <p class="old-price">6,000원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/10174841/pexels-photo-10174841.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="얼그레이 마들렌">
-          </div>
-          <p class="category">디저트</p>
-          <h3>얼그레이 마들렌</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">3,100원</p>
-            <p class="old-price">3,500원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/35856214/pexels-photo-35856214.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="소금빵">
-          </div>
-          <p class="category">빵</p>
-          <h3>소금빵</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">2,900원</p>
-            <p class="old-price">3,300원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/6622749/pexels-photo-6622749.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="고맙구마빵">
-          </div>
-          <p class="category">빵</p>
-          <h3>고맙구마빵</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">6,200원</p>
-            <p class="old-price">6,900원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="빵">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/9536038/pexels-photo-9536038.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="카스테라 펌킨빵">
-          </div>
-          <p class="category">빵</p>
-          <h3>카스테라 펌킨빵</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">6,300원</p>
-            <p class="old-price">7,000원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/5886145/pexels-photo-5886145.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="레몬 마들렌">
-          </div>
-          <p class="category">디저트</p>
-          <h3>레몬 마들렌</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">2,800원</p>
-            <p class="old-price">3,200원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/6431594/pexels-photo-6431594.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="생딸기 다쿠아즈">
-          </div>
-          <p class="category">디저트</p>
-          <h3>생딸기 다쿠아즈</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">3,400원</p>
-            <p class="old-price">3,800원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-        <div class="card" data-cat="디저트">
-          <div class="thumb">
-            <span class="badge new">NEW</span>
-            <button class="heart" onclick="toggleHeart(this)">&#9825;</button>
-            <img class="photo" src="https://images.pexels.com/photos/7064813/pexels-photo-7064813.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop" alt="생초코 다쿠아즈">
-          </div>
-          <p class="category">디저트</p>
-          <h3>생초코 다쿠아즈</h3>
-          <div class="price-row">
-            <span class="sale">10%</span>
-            <p class="new-price">3,600원</p>
-            <p class="old-price">4,000원</p>
-          </div>
-          <button class="add" onclick="담기에넣기(this)">담기</button>
-        </div>
-
-      </div>
+      <p id="load-msg">상품을 불러오고 있어요…</p>
 
       <p id="no-result">찾으시는 상품이 없어요. 다른 이름으로 검색해 보세요.</p>
 
@@ -2066,6 +1796,94 @@
         안내문구.style.display = "none";
       }
     }
+
+    // ===================================================
+    // 상품 목록 (Supabase products 표에서 불러옵니다)
+    //
+    // 카드를 만들어 넣은 뒤 showProducts() 를 불러 주면
+    // 검색 / 초성 검색 / 분류 / 담기가 그대로 동작합니다.
+    // ===================================================
+
+    // <, >, & 같은 글자가 코드로 해석되지 않게 바꿔 줍니다
+    function 글자안전(글) {
+      return String(글)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // 상품 하나로 카드 한 칸을 만듭니다
+    function 상품칸만들기(상품) {
+      var 이름 = 글자안전(상품.name);
+      var 분류 = 글자안전(상품.category);
+
+      // 배지 (BEST / NEW / HOT)
+      var 배지 = "";
+      if (상품.badge) {
+        배지 = '<span class="badge ' + 글자안전(상품.badge) + '">'
+             + 글자안전(상품.badge).toUpperCase() + '</span>';
+      }
+
+      // "인기" 분류는 BEST 배지가 붙은 상품을 보여 줍니다
+      var 인기표시 = (상품.badge === "best") ? ' data-best="yes"' : "";
+
+      // 할인율과 정가는 값이 있을 때만 넣습니다
+      var 할인 = "";
+      if (상품.discount_percent) {
+        할인 = '<span class="sale">' + 상품.discount_percent + '%</span>';
+      }
+      var 정가 = "";
+      if (상품.list_price) {
+        정가 = '<p class="old-price">' + 돈표시(상품.list_price) + '원</p>';
+      }
+
+      return ''
+        + '<div class="card" data-cat="' + 분류 + '"' + 인기표시 + '>'
+        +   '<div class="thumb">'
+        +     배지
+        +     '<button class="heart" onclick="toggleHeart(this)">&#9825;</button>'
+        +     '<img class="photo" src="' + 글자안전(상품.photo_url) + '" alt="' + 이름 + '">'
+        +   '</div>'
+        +   '<p class="category">' + 분류 + '</p>'
+        +   '<h3>' + 이름 + '</h3>'
+        +   '<div class="price-row">'
+        +     할인
+        +     '<p class="new-price">' + 돈표시(상품.price) + '원</p>'
+        +     정가
+        +   '</div>'
+        +   '<button class="add" onclick="담기에넣기(this)">담기</button>'
+        + '</div>';
+    }
+
+    function 상품불러오기() {
+      var 안내 = document.getElementById("load-msg");
+
+      sb.from("products").select("*").order("sort_order").then(function (결과) {
+        if (결과.error) {
+          안내.textContent = "상품을 불러오지 못했어요. 잠시 뒤 새로고침해 주세요. ("
+                           + 결과.error.message + ")";
+          return;
+        }
+        if (결과.data.length === 0) {
+          안내.textContent = "등록된 상품이 없습니다.";
+          return;
+        }
+
+        var 글 = "";
+        for (var i = 0; i < 결과.data.length; i++) {
+          글 = 글 + 상품칸만들기(결과.data[i]);
+        }
+        document.getElementById("card-box").innerHTML = 글;
+
+        안내.style.display = "none";
+
+        // 개수 표시와 검색/분류 상태를 맞춥니다
+        showProducts();
+      });
+    }
+
+    상품불러오기();
   </script>
 
 </body>
