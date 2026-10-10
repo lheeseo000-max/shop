@@ -1486,7 +1486,7 @@
             <h3 class="block-title">주문할 상품</h3>
             <div class="order-lines" id="confirm-lines"></div>
             <div class="order-calc" id="confirm-calc"></div>
-            <button class="order-submit" onclick="최종주문()">이대로 주문하기</button>
+            <button class="order-submit" id="final-btn" onclick="최종주문()">이대로 주문하기</button>
           </div>
 
         </div>
@@ -2107,7 +2107,7 @@
     //
     // body 에 ordering 을 붙이면 쇼핑 화면이 숨고 주문서가 보입니다.
     // 1단계는 받는 분 정보 적기, 2단계는 주문 내용 확인입니다.
-    // 지금은 확인 화면까지만 하고, 저장은 다음 단계에서 연결합니다.
+    // 주문을 누르면 Supabase orders 표에 저장합니다.
     // ===================================================
 
     // 1단계 / 2단계 중 하나만 보여 줍니다
@@ -2274,9 +2274,78 @@
       단계보이기("step2");
     }
 
-    // 확인 화면의 주문하기 (저장은 아직 연결하지 않았습니다)
+    // 확인 화면의 주문하기 : 주문을 Supabase orders 표에 저장합니다
     function 최종주문() {
-      짧은알림("다음 시간에 완성됩니다");
+      if (장바구니목록.length === 0) {
+        짧은알림("장바구니가 비어 있어요");
+        return;
+      }
+
+      var 이름 = document.getElementById("recv-name").value.trim();
+      var 연락처 = document.getElementById("recv-tel").value.trim();
+      var 주소 = document.getElementById("recv-addr").value.trim();
+
+      sb.auth.getUser().then(function (결과) {
+        var 사용자 = 결과.data.user;
+
+        // 로그인하지 않으면 주문을 저장할 수 없습니다
+        if (!사용자) {
+          주문서닫기();
+          openModal("login");
+          안내보이기("login-msg", "주문하려면 먼저 로그인해 주세요.", false);
+          return;
+        }
+
+        var 상품금액 = 0;
+        var 보낼상품 = [];
+        for (var i = 0; i < 장바구니목록.length; i++) {
+          var 상품 = 장바구니목록[i];
+          상품금액 = 상품금액 + 상품.단가 * 상품.개수;
+          보낼상품.push({ name: 상품.이름, price: 상품.단가, qty: 상품.개수 });
+        }
+        var 배송비 = 배송비계산(상품금액);
+        var 낼금액 = 상품금액 + 배송비;
+
+        // 저장이 끝날 때까지 버튼을 잠가 둡니다 (두 번 눌리는 것 방지)
+        var 버튼 = document.getElementById("final-btn");
+        버튼.disabled = true;
+        버튼.textContent = "주문 중...";
+
+        sb.from("orders").insert({
+          user_id: 사용자.id,
+          items: 보낼상품,
+          goods_total: 상품금액,
+          ship_fee: 배송비,
+          total: 낼금액,
+          recv_name: 이름,
+          recv_tel: 연락처,
+          recv_addr: 주소
+        }).then(function (저장결과) {
+          버튼.disabled = false;
+          버튼.textContent = "이대로 주문하기";
+
+          if (저장결과.error) {
+            짧은알림("주문을 저장하지 못했어요: " + 저장결과.error.message);
+            return;
+          }
+
+          // 주문이 들어갔으니 장바구니를 비우고 쇼핑 화면으로 돌아갑니다
+          장바구니목록 = [];
+          장바구니그리기();
+          주문서비우기();
+          주문서닫기();
+          짧은알림("총 " + 돈표시(낼금액) + "원 주문이 접수되었어요");
+        });
+      });
+    }
+
+    // 주문서 입력칸을 비웁니다
+    function 주문서비우기() {
+      document.getElementById("recv-name").value = "";
+      document.getElementById("recv-tel").value = "";
+      document.getElementById("recv-addr").value = "";
+      document.getElementById("order-msg").textContent = "";
+      표시지우기();
     }
 
     // 맨 위 장바구니를 누르면 팝업이 뜹니다
