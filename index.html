@@ -1416,8 +1416,8 @@
         <h3>로그인</h3>
         <p class="modal-sub">브레드피트와나에 오신 것을 환영합니다</p>
 
-        <input type="email" id="login-id" class="form-input" placeholder="이메일">
-        <input type="password" id="login-pw" class="form-input" placeholder="비밀번호">
+        <input type="email" id="login-id" class="form-input" placeholder="이메일" onkeyup="엔터로실행(event, login)">
+        <input type="password" id="login-pw" class="form-input" placeholder="비밀번호" onkeyup="엔터로실행(event, login)">
 
         <p class="form-msg" id="login-msg"></p>
         <button class="form-btn" onclick="login()">로그인</button>
@@ -1433,10 +1433,10 @@
         <h3>회원가입</h3>
         <p class="modal-sub">갓 구운 빵 소식을 가장 먼저 받아보세요</p>
 
-        <input type="text" id="join-name" class="form-input" placeholder="이름">
-        <input type="email" id="join-id" class="form-input" placeholder="이메일">
-        <input type="password" id="join-pw" class="form-input" placeholder="비밀번호 (6자 이상)">
-        <input type="password" id="join-pw2" class="form-input" placeholder="비밀번호 확인">
+        <input type="text" id="join-name" class="form-input" placeholder="이름" onkeyup="엔터로실행(event, join)">
+        <input type="email" id="join-id" class="form-input" placeholder="이메일" onkeyup="엔터로실행(event, join)">
+        <input type="password" id="join-pw" class="form-input" placeholder="비밀번호 (6자 이상)" onkeyup="엔터로실행(event, join)">
+        <input type="password" id="join-pw2" class="form-input" placeholder="비밀번호 확인" onkeyup="엔터로실행(event, join)">
 
         <p class="form-msg" id="join-msg"></p>
         <button class="form-btn" onclick="join()">가입하기</button>
@@ -1518,6 +1518,13 @@
     function closeIfOutside(이벤트) {
       if (이벤트.target.id === "modal-bg") {
         closeModal();
+      }
+    }
+
+    // 입력칸에서 엔터를 누르면 버튼을 누른 것과 같게 합니다
+    function 엔터로실행(이벤트, 할일) {
+      if (이벤트.key === "Enter") {
+        할일();
       }
     }
 
