@@ -1467,6 +1467,40 @@
     // 담긴 상품을 { 이름, 단가, 개수 } 모양으로 모아 둡니다
     var 장바구니목록 = [];
 
+    // 담긴 상품을 브라우저에 저장해 두므로 새로고침해도 남습니다
+    var 장바구니저장키 = "breadpit-cart";
+
+    function 장바구니저장() {
+      try {
+        localStorage.setItem(장바구니저장키, JSON.stringify(장바구니목록));
+      } catch (e) {
+        // 저장이 막힌 브라우저(시크릿 모드 등)에서도 사이트는 그대로 동작합니다
+      }
+    }
+
+    function 장바구니복원() {
+      try {
+        var 글자 = localStorage.getItem(장바구니저장키);
+        if (글자) {
+          var 읽은것 = JSON.parse(글자);
+          var 정리됨 = [];
+          for (var i = 0; i < 읽은것.length; i++) {
+            var 하나 = 읽은것[i];
+            // 값이 깨져 있으면 건너뜁니다 (금액이 NaN 이 되는 것을 막습니다)
+            if (하나 && typeof 하나.이름 === "string"
+                     && typeof 하나.단가 === "number"
+                     && typeof 하나.개수 === "number" && 하나.개수 > 0) {
+              정리됨.push({ 이름: 하나.이름, 단가: 하나.단가, 개수: 하나.개수 });
+            }
+          }
+          장바구니목록 = 정리됨;
+        }
+      } catch (e) {
+        장바구니목록 = [];
+      }
+      장바구니그리기();
+    }
+
     // "4,000원" 같은 글자에서 숫자만 뽑아냅니다
     function 숫자만(글자) {
       return Number(글자.replace(/[^0-9]/g, ""));
@@ -1546,6 +1580,9 @@
 
     // 장바구니 영역을 다시 그립니다
     function 장바구니그리기() {
+      // 바뀐 내용을 바로 저장합니다
+      장바구니저장();
+
       var 상자 = document.getElementById("cart-box");
       var 총액줄 = document.getElementById("cart-total");
       var 안내줄 = document.getElementById("ship-note");
@@ -1673,20 +1710,89 @@
     }
 
     // ===== 하트 찜하기 =====
+    //
+    // 찜한 상품의 이름을 브라우저에 저장해 두므로
+    // 새로고침해도 하트와 개수가 그대로 남습니다.
 
-    var 찜개수 = 0;
+    var 찜저장키 = "breadpit-zzim";
+    var 찜목록 = 찜읽기();
+
+    function 찜읽기() {
+      try {
+        var 글자 = localStorage.getItem(찜저장키);
+        if (!글자) {
+          return [];
+        }
+        var 읽은것 = JSON.parse(글자);
+        var 정리됨 = [];
+        for (var i = 0; i < 읽은것.length; i++) {
+          if (typeof 읽은것[i] === "string") {
+            정리됨.push(읽은것[i]);
+          }
+        }
+        return 정리됨;
+      } catch (e) {
+        return [];   // 저장이 막힌 브라우저에서도 사이트는 그대로 동작합니다
+      }
+    }
+
+    function 찜저장() {
+      try {
+        localStorage.setItem(찜저장키, JSON.stringify(찜목록));
+      } catch (e) {
+        // 저장만 안 되고 나머지는 정상 동작합니다
+      }
+    }
+
+    function 찜개수표시() {
+      document.getElementById("zzim-count").textContent = 찜목록.length;
+    }
 
     function toggleHeart(하트버튼) {
-      if (하트버튼.classList.contains("on")) {
+      var 이름 = 하트버튼.closest(".card").querySelector("h3").textContent;
+      var 위치 = 찜목록.indexOf(이름);
+
+      if (위치 >= 0) {
+        찜목록.splice(위치, 1);
         하트버튼.classList.remove("on");
         하트버튼.innerHTML = "&#9825;";   // 빈 하트
-        찜개수 = 찜개수 - 1;
       } else {
+        찜목록.push(이름);
         하트버튼.classList.add("on");
         하트버튼.innerHTML = "&#9829;";   // 채워진 하트
-        찜개수 = 찜개수 + 1;
       }
-      document.getElementById("zzim-count").textContent = 찜개수;
+
+      찜개수표시();
+      찜저장();
+    }
+
+    // 상품 카드를 그린 뒤, 찜해 둔 상품에 하트를 다시 칠합니다
+    function 찜복원() {
+      var 카드들 = document.querySelectorAll(".card");
+      var 있는이름 = [];
+
+      for (var i = 0; i < 카드들.length; i++) {
+        var 이름 = 카드들[i].querySelector("h3").textContent;
+        있는이름.push(이름);
+
+        if (찜목록.indexOf(이름) >= 0) {
+          var 하트 = 카드들[i].querySelector(".heart");
+          하트.classList.add("on");
+          하트.innerHTML = "&#9829;";
+        }
+      }
+
+      // 지금 팔지 않는 상품은 찜 목록에서 지웁니다 (개수가 틀어지지 않게)
+      var 남은것 = [];
+      for (var j = 0; j < 찜목록.length; j++) {
+        if (있는이름.indexOf(찜목록[j]) >= 0) {
+          남은것.push(찜목록[j]);
+        }
+      }
+      찜목록 = 남은것;
+
+      찜개수표시();
+      찜저장();
     }
 
     // ===== 초성 검색 =====
@@ -1880,10 +1986,12 @@
 
         // 개수 표시와 검색/분류 상태를 맞춥니다
         showProducts();
+        찜복원();
       });
     }
 
     상품불러오기();
+    장바구니복원();
   </script>
 
 </body>
