@@ -148,10 +148,18 @@
       border-color: var(--accent);
       color: white;
     }
-    .user-name {
+    /* 로그인한 내 이메일 (버튼과 높이가 맞는 알약 모양) */
+    .user-email {
+      max-width: 190px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: 13px;
       font-weight: 600;
       color: var(--ink);
+      background-color: rgba(22, 17, 14, 0.05);
+      padding: 7px 13px;
+      border-radius: 100px;
     }
 
     /* 팝업 배경 (평소에는 숨김) */
@@ -946,6 +954,7 @@
       .chip { flex: 0 0 auto; }
       .card-box { grid-template-columns: repeat(2, 1fr); gap: 26px 14px; }
       .about-text { font-size: 19px; }
+      .user-email { max-width: 110px; }
     }
   </style>
 </head>
@@ -967,15 +976,14 @@
           장바구니 <span id="cart-count">0</span>
         </p>
 
-        <!-- 로그인 전에 보이는 버튼 -->
+        <!-- 로그인 전 : 로그인 버튼만 보입니다 -->
         <div class="auth-area" id="auth-out">
-          <button class="auth-btn" onclick="openModal('login')">로그인</button>
-          <button class="auth-btn primary" onclick="openModal('join')">회원가입</button>
+          <button class="auth-btn primary" onclick="openModal('login')">로그인</button>
         </div>
 
-        <!-- 로그인 후에 보이는 부분 -->
+        <!-- 로그인 후 : 내 이메일 + 로그아웃 -->
         <div class="auth-area" id="auth-in" style="display: none;">
-          <span class="user-name" id="user-name"></span>
+          <span class="user-email" id="user-email"></span>
           <button class="auth-btn" onclick="logout()">로그아웃</button>
         </div>
       </div>
@@ -1646,14 +1654,14 @@
     // 로그인 상태에 맞춰 맨 위 영역을 바꿉니다
     function 화면맞추기(세션) {
       if (세션 && 세션.user) {
-        var 이름 = 세션.user.user_metadata.name;
-        if (!이름) {
-          이름 = 세션.user.email.split("@")[0];   // 이름이 없으면 메일 앞부분을 씁니다
-        }
+        // 로그인했을 때 : 내 이메일 + 로그아웃
+        var 이메일칸 = document.getElementById("user-email");
+        이메일칸.textContent = 세션.user.email;
+        이메일칸.title = 세션.user.email;   // 길어서 잘리면 마우스로 전체를 볼 수 있게
         document.getElementById("auth-out").style.display = "none";
         document.getElementById("auth-in").style.display = "flex";
-        document.getElementById("user-name").textContent = 이름 + "님";
       } else {
+        // 로그인하지 않았을 때 : 로그인 버튼
         document.getElementById("auth-out").style.display = "flex";
         document.getElementById("auth-in").style.display = "none";
       }
