@@ -875,77 +875,193 @@
     }
 
     /* ===================================================
-       주문서 팝업
+       주문서 (전체 화면)
        =================================================== */
-    .modal.order-modal {
-      max-width: 460px;
-      padding: 32px 28px 28px 28px;
+
+    /* 주문서를 보는 동안에는 쇼핑 화면을 숨깁니다 */
+    .order-page {
+      display: none;
+      padding: 44px 0 100px 0;
+    }
+    body.ordering .hero,
+    body.ordering .products,
+    body.ordering .about,
+    body.ordering footer {
+      display: none;
+    }
+    body.ordering .order-page {
+      display: block;
     }
 
-    /* 무엇을 얼마에 주문하는지 알려 주는 줄 */
-    .order-sum {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 22px;
-      padding: 13px 16px;
-      background-color: #4A423C;
-      border-radius: 12px;
+    .order-head {
+      margin-bottom: 32px;
     }
-    .order-sum .what {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .back-btn {
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-family: inherit;
       font-size: 13px;
       font-weight: 600;
-      color: #CFC6BC;
+      padding: 7px 15px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.18s;
     }
-    .order-sum .howmuch {
-      white-space: nowrap;
-      font-size: 16px;
+    .back-btn:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+    .order-head h2 {
+      font-size: 34px;
       font-weight: 800;
-      letter-spacing: -0.035em;
-      color: white;
+      letter-spacing: -0.04em;
+      margin: 20px 0 8px 0;
+    }
+    .order-head > p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    /* 왼쪽 입력칸, 오른쪽 주문 내역 */
+    .order-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 26px;
+      align-items: start;
+    }
+    .order-box {
+      background-color: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 28px;
+    }
+    /* 주문 내역은 스크롤을 따라 같이 내려옵니다 */
+    .order-side {
+      position: sticky;
+      top: 88px;
+    }
+    .block-title {
+      margin: 0 0 20px 0;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
 
     /* 입력칸 위에 붙는 작은 이름표 */
     .field-label {
       display: block;
-      margin: 0 0 6px 2px;
-      font-size: 12px;
+      margin: 0 0 7px 2px;
+      font-size: 12.5px;
       font-weight: 700;
       letter-spacing: 0.02em;
       color: var(--muted);
     }
     .field-label + .form-input {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+      font-size: 15px;
+      padding: 14px 16px;
     }
 
     /* 주소는 한 칸에 길게 적을 수 있게 합니다 */
     .addr-input {
-      min-height: 74px;
-      line-height: 1.55;
+      min-height: 96px;
+      line-height: 1.6;
       resize: vertical;
     }
 
-    .order-actions {
+    /* 주문 내역 한 줄 */
+    .order-line {
       display: flex;
-      gap: 9px;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
     }
-    .order-actions .form-btn {
-      flex: 1;
+    .order-line:last-child {
+      border-bottom: none;
     }
-    .form-btn.ghost {
-      background-color: white;
-      color: var(--ink);
-      border: 1px solid var(--line);
+    .order-line .nm {
+      min-width: 0;
+      font-weight: 600;
     }
-    .form-btn.ghost:hover {
-      background-color: white;
-      border-color: var(--ink);
-      color: var(--ink);
+    .order-line .qt {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .order-line .am {
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    /* 금액 계산 */
+    .order-calc {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 9px;
+      font-size: 14px;
+    }
+    .calc-row span {
+      color: var(--muted);
+    }
+    .calc-row b {
+      font-weight: 600;
+    }
+    .calc-total {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 15px 18px;
+      background-color: #4A423C;
+      border-radius: 12px;
+    }
+    .calc-total span {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      color: #CFC6BC;
+    }
+    .calc-total b {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: white;
+    }
+
+    .order-submit {
+      width: 100%;
+      margin-top: 18px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.18s;
+    }
+    .order-submit:hover {
+      background-color: #BF3F1E;
+    }
+
+    @media (max-width: 860px) {
+      .order-grid { grid-template-columns: 1fr; }
+      .order-side { position: static; }
+      .order-head h2 { font-size: 27px; }
+      .order-box { padding: 22px; }
     }
 
     /* ===================================================
@@ -1246,36 +1362,46 @@
     </div>
   </div>
 
-  <!-- ===== 주문서 팝업 ===== -->
-  <div class="modal-bg" id="order-bg" onclick="주문서바깥닫기(event)">
-    <div class="modal order-modal">
-      <button class="modal-close" onclick="주문서닫기()">&times;</button>
+  <!-- ===== 주문서 (전체 화면) ===== -->
+  <div class="order-page" id="order-page">
+    <div class="inner">
 
-      <h3>주문서</h3>
-      <p class="modal-sub">받는 분 정보를 적어 주세요</p>
-
-      <!-- 무엇을 주문하는지 (장바구니에서 읽어 와 보여 주기만 합니다) -->
-      <div class="order-sum" id="order-sum"></div>
-
-      <label class="field-label" for="recv-name">받는 분 이름</label>
-      <input type="text" id="recv-name" class="form-input" placeholder="홍길동"
-             onkeyup="엔터로실행(event, 주문서확인)">
-
-      <label class="field-label" for="recv-tel">연락처</label>
-      <input type="tel" id="recv-tel" class="form-input" placeholder="010-1234-5678"
-             onkeyup="엔터로실행(event, 주문서확인)">
-
-      <label class="field-label" for="recv-addr">주소</label>
-      <textarea id="recv-addr" class="form-input addr-input"
-                placeholder="받으실 주소를 한 번에 적어 주세요 (건물·동·호수까지)"></textarea>
-
-      <p class="form-msg" id="order-msg"></p>
-
-      <div class="order-actions">
-        <button class="form-btn ghost" onclick="주문서에서장바구니로()">장바구니로</button>
-        <button class="form-btn" onclick="주문서확인()">주문하기</button>
+      <div class="order-head">
+        <button class="back-btn" onclick="주문서에서장바구니로()">&larr; 장바구니로 돌아가기</button>
+        <h2>주문서</h2>
+        <p>받는 분 정보를 적어 주시면 배송을 준비합니다</p>
       </div>
 
+      <div class="order-grid">
+
+        <!-- 왼쪽 : 받는 분 정보 -->
+        <div class="order-box order-form">
+          <h3 class="block-title">받는 분 정보</h3>
+
+          <label class="field-label" for="recv-name">받는 분 이름</label>
+          <input type="text" id="recv-name" class="form-input" placeholder="홍길동"
+                 onkeyup="엔터로실행(event, 주문서확인)">
+
+          <label class="field-label" for="recv-tel">연락처</label>
+          <input type="tel" id="recv-tel" class="form-input" placeholder="010-1234-5678"
+                 onkeyup="엔터로실행(event, 주문서확인)">
+
+          <label class="field-label" for="recv-addr">주소</label>
+          <textarea id="recv-addr" class="form-input addr-input"
+                    placeholder="받으실 주소를 한 번에 적어 주세요 (건물·동·호수까지)"></textarea>
+
+          <p class="form-msg" id="order-msg"></p>
+        </div>
+
+        <!-- 오른쪽 : 주문 내역 -->
+        <div class="order-box order-side">
+          <h3 class="block-title">주문 내역</h3>
+          <div class="order-lines" id="order-lines"></div>
+          <div class="order-calc" id="order-calc"></div>
+          <button class="order-submit" onclick="주문서확인()">주문하기</button>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -1887,27 +2013,21 @@
     }
 
     // ===================================================
-    // 주문서
+    // 주문서 (전체 화면)
     //
-    // 지금은 화면과 입력 확인까지만 합니다.
-    // 주문 저장은 다음 단계에서 연결합니다.
+    // body 에 ordering 을 붙이면 쇼핑 화면이 숨고 주문서가 보입니다.
+    // 지금은 화면과 입력 확인까지만 하고, 저장은 다음 단계에서 연결합니다.
     // ===================================================
 
     function 주문서열기() {
-      document.getElementById("order-bg").classList.add("open");
+      document.body.classList.add("ordering");
       document.getElementById("order-msg").textContent = "";
+      window.scrollTo(0, 0);
       document.getElementById("recv-name").focus();
     }
 
     function 주문서닫기() {
-      document.getElementById("order-bg").classList.remove("open");
-    }
-
-    // 팝업 바깥쪽(어두운 곳)을 누르면 닫힙니다
-    function 주문서바깥닫기(이벤트) {
-      if (이벤트.target.id === "order-bg") {
-        주문서닫기();
-      }
+      document.body.classList.remove("ordering");
     }
 
     // 주문서에서 장바구니로 되돌아갑니다
@@ -1916,23 +2036,34 @@
       장바구니열기();
     }
 
-    // 무엇을 얼마에 주문하는지 주문서 위쪽에 보여 줍니다
+    // 무엇을 얼마에 주문하는지 오른쪽에 보여 줍니다
     function 주문요약그리기() {
-      var 개수 = 0;
+      var 줄 = "";
       var 상품금액 = 0;
+
       for (var i = 0; i < 장바구니목록.length; i++) {
-        개수 = 개수 + 장바구니목록[i].개수;
-        상품금액 = 상품금액 + 장바구니목록[i].단가 * 장바구니목록[i].개수;
-      }
+        var 상품 = 장바구니목록[i];
+        var 줄금액 = 상품.단가 * 상품.개수;
+        상품금액 = 상품금액 + 줄금액;
 
-      var 무엇 = 장바구니목록[0].이름;
-      if (장바구니목록.length > 1) {
-        무엇 = 무엇 + " 외 " + (장바구니목록.length - 1) + "종";
+        줄 = 줄
+          + '<div class="order-line">'
+          +   '<span class="nm">' + 글자안전(상품.이름)
+          +     '<span class="qt"> × ' + 상품.개수 + '</span>'
+          +   '</span>'
+          +   '<span class="am">' + 돈표시(줄금액) + '원</span>'
+          + '</div>';
       }
+      document.getElementById("order-lines").innerHTML = 줄;
 
-      document.getElementById("order-sum").innerHTML =
-          '<span class="what">' + 글자안전(무엇) + ' · 모두 ' + 개수 + '개</span>'
-        + '<span class="howmuch">' + 돈표시(상품금액 + 배송비계산(상품금액)) + '원</span>';
+      var 배송비 = 배송비계산(상품금액);
+      var 배송비글 = (배송비 === 0) ? "무료" : (돈표시(배송비) + "원");
+
+      document.getElementById("order-calc").innerHTML =
+          '<div class="calc-row"><span>상품 금액</span><b>' + 돈표시(상품금액) + '원</b></div>'
+        + '<div class="calc-row"><span>배송비</span><b>' + 배송비글 + '</b></div>'
+        + '<div class="calc-total"><span>총 결제 금액</span><b>'
+        +   돈표시(상품금액 + 배송비) + '원</b></div>';
     }
 
     // 적어 넣은 내용을 확인합니다 (저장은 아직 하지 않습니다)
