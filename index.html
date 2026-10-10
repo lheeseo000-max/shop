@@ -1404,7 +1404,7 @@
         <h3>로그인</h3>
         <p class="modal-sub">브레드피트와나에 오신 것을 환영합니다</p>
 
-        <input type="text" id="login-id" class="form-input" placeholder="아이디">
+        <input type="email" id="login-id" class="form-input" placeholder="이메일">
         <input type="password" id="login-pw" class="form-input" placeholder="비밀번호">
 
         <p class="form-msg" id="login-msg"></p>
@@ -1422,8 +1422,8 @@
         <p class="modal-sub">갓 구운 빵 소식을 가장 먼저 받아보세요</p>
 
         <input type="text" id="join-name" class="form-input" placeholder="이름">
-        <input type="text" id="join-id" class="form-input" placeholder="아이디 (4자 이상)">
-        <input type="password" id="join-pw" class="form-input" placeholder="비밀번호 (4자 이상)">
+        <input type="email" id="join-id" class="form-input" placeholder="이메일">
+        <input type="password" id="join-pw" class="form-input" placeholder="비밀번호 (6자 이상)">
         <input type="password" id="join-pw2" class="form-input" placeholder="비밀번호 확인">
 
         <p class="form-msg" id="join-msg"></p>
@@ -1445,31 +1445,40 @@
   <!-- ===== 짧은 알림 ===== -->
   <div class="toast" id="toast"></div>
 
+  <!-- ===== Supabase 라이브러리 (아래 script 보다 먼저 와야 합니다) ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+
   <script>
     // ===================================================
-    // 로그인 / 회원가입
+    // Supabase 연결
     //
-    // 서버가 없는 연습용이라, 회원 정보는 이 브라우저 안에만
-    // 저장됩니다(localStorage). 다른 기기에서는 보이지 않습니다.
+    // 아래 키는 "publishable(공개용)" 키라서 웹페이지에 넣어도
+    // 괜찮게 만들어진 키입니다. 다만 공개용 키로 할 수 있는 일은
+    // 테이블마다 걸어 둔 RLS(행 수준 보안) 규칙이 결정하므로,
+    // 테이블을 만들 때 RLS를 꼭 켜야 합니다.
     // ===================================================
 
-    // 저장할 때 쓸 이름표
-    var 회원저장키 = "breadpit-users";
-    var 로그인저장키 = "breadpit-login";
+    var SUPABASE_URL = "https://wseumcmcxwvmovdmxria.supabase.co";
+    var SUPABASE_KEY = "sb_publishable_2Gxn373rMkIJry-VcSIAwg_-h7RPtCy";
 
-    // 저장된 회원 목록을 가져옵니다
-    function 회원목록가져오기() {
-      var 글자 = localStorage.getItem(회원저장키);
-      if (글자 === null) {
-        return {};
+    // supabase 는 위에서 불러온 라이브러리가 만들어 준 이름입니다
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // 연결이 되었는지 확인해서 개발자 콘솔(F12)에 알려 줍니다
+    sb.auth.getSession().then(function (결과) {
+      if (결과.error) {
+        console.error("Supabase 연결 실패:", 결과.error.message);
+      } else {
+        console.log("Supabase 연결 성공 —", SUPABASE_URL);
       }
-      return JSON.parse(글자);
-    }
+    });
 
-    // 회원 목록을 저장합니다
-    function 회원목록저장(목록) {
-      localStorage.setItem(회원저장키, JSON.stringify(목록));
-    }
+    // ===================================================
+    // 로그인 / 회원가입  (Supabase Auth)
+    //
+    // 회원 정보는 Supabase 서버에 저장되므로, 다른 기기에서도
+    // 같은 계정으로 로그인됩니다. 아이디 대신 이메일을 씁니다.
+    // ===================================================
 
     // 팝업 열기 ("login" 또는 "join")
     function openModal(어떤것) {
@@ -1511,10 +1520,33 @@
       }
     }
 
+    // Supabase가 보내 주는 영어 오류를 우리말로 바꿔 줍니다
+    function 오류우리말(글) {
+      if (글.indexOf("Invalid login credentials") >= 0) {
+        return "이메일 또는 비밀번호가 맞지 않습니다.";
+      }
+      if (글.indexOf("already registered") >= 0 || 글.indexOf("already been registered") >= 0) {
+        return "이미 가입된 이메일입니다.";
+      }
+      if (글.indexOf("Password should be") >= 0) {
+        return "비밀번호는 6자 이상으로 입력해 주세요.";
+      }
+      if (글.indexOf("Unable to validate email") >= 0 || 글.indexOf("invalid format") >= 0) {
+        return "이메일 형식이 올바르지 않습니다.";
+      }
+      if (글.indexOf("Email not confirmed") >= 0) {
+        return "이메일 인증을 먼저 마쳐 주세요. 받은 메일의 링크를 눌러 주세요.";
+      }
+      if (글.indexOf("rate limit") >= 0 || 글.indexOf("Too many") >= 0 || 글.indexOf("For security purposes") >= 0) {
+        return "요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.";
+      }
+      return 글;
+    }
+
     // ===== 회원가입 =====
     function join() {
       var 이름 = document.getElementById("join-name").value.trim();
-      var 아이디 = document.getElementById("join-id").value.trim();
+      var 이메일 = document.getElementById("join-id").value.trim();
       var 비번 = document.getElementById("join-pw").value;
       var 비번확인 = document.getElementById("join-pw2").value;
 
@@ -1522,12 +1554,12 @@
         안내보이기("join-msg", "이름을 입력해 주세요.", false);
         return;
       }
-      if (아이디.length < 4) {
-        안내보이기("join-msg", "아이디는 4자 이상으로 입력해 주세요.", false);
+      if (이메일.indexOf("@") < 0) {
+        안내보이기("join-msg", "이메일을 입력해 주세요.", false);
         return;
       }
-      if (비번.length < 4) {
-        안내보이기("join-msg", "비밀번호는 4자 이상으로 입력해 주세요.", false);
+      if (비번.length < 6) {
+        안내보이기("join-msg", "비밀번호는 6자 이상으로 입력해 주세요.", false);
         return;
       }
       if (비번 !== 비번확인) {
@@ -1535,84 +1567,100 @@
         return;
       }
 
-      var 회원들 = 회원목록가져오기();
-      if (회원들[아이디]) {
-        안내보이기("join-msg", "이미 사용 중인 아이디입니다.", false);
-        return;
-      }
+      안내보이기("join-msg", "가입 중입니다...", true);
 
-      // 새 회원을 추가하고 저장합니다
-      회원들[아이디] = { 비번: 비번, 이름: 이름 };
-      회원목록저장(회원들);
+      sb.auth.signUp({
+        email: 이메일,
+        password: 비번,
+        options: { data: { name: 이름 } }
+      }).then(function (결과) {
+        if (결과.error) {
+          안내보이기("join-msg", 오류우리말(결과.error.message), false);
+          return;
+        }
 
-      안내보이기("join-msg", "가입되었습니다! 바로 로그인할게요.", true);
+        // 이메일 인증이 꺼져 있으면 session 이 바로 옵니다 → 그대로 로그인
+        if (결과.data.session) {
+          안내보이기("join-msg", "가입되었습니다! 바로 로그인할게요.", true);
+          setTimeout(function () {
+            closeModal();
+            폼비우기();
+          }, 900);
+          return;
+        }
 
-      // 가입한 아이디로 바로 로그인시켜 줍니다
-      로그인시키기(아이디, 이름);
-
-      setTimeout(function () {
-        closeModal();
-        document.getElementById("join-name").value = "";
-        document.getElementById("join-id").value = "";
-        document.getElementById("join-pw").value = "";
-        document.getElementById("join-pw2").value = "";
-      }, 900);
+        // 이메일 인증이 켜져 있으면 메일을 확인해야 합니다
+        안내보이기("join-msg", "가입 확인 메일을 보냈어요. 메일의 링크를 눌러 주세요.", true);
+      });
     }
 
     // ===== 로그인 =====
     function login() {
-      var 아이디 = document.getElementById("login-id").value.trim();
+      var 이메일 = document.getElementById("login-id").value.trim();
       var 비번 = document.getElementById("login-pw").value;
 
-      var 회원들 = 회원목록가져오기();
-
-      if (!회원들[아이디]) {
-        안내보이기("login-msg", "없는 아이디입니다.", false);
-        return;
-      }
-      if (회원들[아이디].비번 !== 비번) {
-        안내보이기("login-msg", "비밀번호가 맞지 않습니다.", false);
+      if (이메일 === "" || 비번 === "") {
+        안내보이기("login-msg", "이메일과 비밀번호를 입력해 주세요.", false);
         return;
       }
 
-      안내보이기("login-msg", "로그인되었습니다!", true);
-      로그인시키기(아이디, 회원들[아이디].이름);
+      안내보이기("login-msg", "로그인 중입니다...", true);
 
-      setTimeout(function () {
-        closeModal();
-        document.getElementById("login-id").value = "";
-        document.getElementById("login-pw").value = "";
-      }, 700);
+      sb.auth.signInWithPassword({ email: 이메일, password: 비번 }).then(function (결과) {
+        if (결과.error) {
+          안내보이기("login-msg", 오류우리말(결과.error.message), false);
+          return;
+        }
+        안내보이기("login-msg", "로그인되었습니다!", true);
+        setTimeout(function () {
+          closeModal();
+          폼비우기();
+        }, 700);
+      });
     }
 
-    // 화면을 로그인 상태로 바꿉니다
-    function 로그인시키기(아이디, 이름) {
-      localStorage.setItem(로그인저장키, 아이디);
-      document.getElementById("auth-out").style.display = "none";
-      document.getElementById("auth-in").style.display = "flex";
-      document.getElementById("user-name").textContent = 이름 + "님";
+    // 입력칸을 비웁니다
+    function 폼비우기() {
+      document.getElementById("login-id").value = "";
+      document.getElementById("login-pw").value = "";
+      document.getElementById("join-name").value = "";
+      document.getElementById("join-id").value = "";
+      document.getElementById("join-pw").value = "";
+      document.getElementById("join-pw2").value = "";
     }
 
     // ===== 로그아웃 =====
     function logout() {
-      localStorage.removeItem(로그인저장키);
-      document.getElementById("auth-out").style.display = "flex";
-      document.getElementById("auth-in").style.display = "none";
-      alert("로그아웃되었습니다.");
+      sb.auth.signOut().then(function () {
+        짧은알림("로그아웃되었습니다");
+      });
     }
 
-    // 페이지를 열 때, 이미 로그인해 둔 상태인지 확인합니다
-    function 로그인확인() {
-      var 아이디 = localStorage.getItem(로그인저장키);
-      if (아이디 === null) {
-        return;
-      }
-      var 회원들 = 회원목록가져오기();
-      if (회원들[아이디]) {
-        로그인시키기(아이디, 회원들[아이디].이름);
+    // 로그인 상태에 맞춰 맨 위 영역을 바꿉니다
+    function 화면맞추기(세션) {
+      if (세션 && 세션.user) {
+        var 이름 = 세션.user.user_metadata.name;
+        if (!이름) {
+          이름 = 세션.user.email.split("@")[0];   // 이름이 없으면 메일 앞부분을 씁니다
+        }
+        document.getElementById("auth-out").style.display = "none";
+        document.getElementById("auth-in").style.display = "flex";
+        document.getElementById("user-name").textContent = 이름 + "님";
+      } else {
+        document.getElementById("auth-out").style.display = "flex";
+        document.getElementById("auth-in").style.display = "none";
       }
     }
-    로그인확인();
+
+    // 로그인/로그아웃이 일어나면 알아서 화면을 맞춰 줍니다
+    sb.auth.onAuthStateChange(function (사건, 세션) {
+      화면맞추기(세션);
+    });
+
+    // 페이지를 열 때, 이미 로그인해 둔 상태인지 확인합니다
+    sb.auth.getSession().then(function (결과) {
+      화면맞추기(결과.data.session);
+    });
 
     // 버튼을 누르면 알림창이 뜹니다
     function showAlert() {
@@ -1757,22 +1805,59 @@
       상자.innerHTML = 글;
     }
 
-    // 주문 버튼 : 장바구니를 비우고 팝업을 닫습니다
+    // 주문 버튼 : 주문 내역을 Supabase에 저장하고 장바구니를 비웁니다
     function 주문하기() {
       if (장바구니목록.length === 0) {
         return;
       }
 
-      var 전체금액 = 0;
-      for (var i = 0; i < 장바구니목록.length; i++) {
-        전체금액 = 전체금액 + 장바구니목록[i].단가 * 장바구니목록[i].개수;
-      }
-      var 낼금액 = 전체금액 + 배송비계산(전체금액);
+      sb.auth.getUser().then(function (결과) {
+        var 사용자 = 결과.data.user;
 
-      장바구니목록 = [];
-      장바구니그리기();
-      장바구니닫기();
-      짧은알림("총 " + 돈표시(낼금액) + "원 주문이 접수되었어요");
+        // 로그인하지 않으면 주문 내역을 저장할 수 없습니다
+        if (!사용자) {
+          장바구니닫기();
+          openModal("login");
+          안내보이기("login-msg", "주문하려면 먼저 로그인해 주세요.", false);
+          return;
+        }
+
+        var 상품금액 = 0;
+        var 보낼상품 = [];
+        for (var i = 0; i < 장바구니목록.length; i++) {
+          var 상품 = 장바구니목록[i];
+          상품금액 = 상품금액 + 상품.단가 * 상품.개수;
+          보낼상품.push({ name: 상품.이름, price: 상품.단가, qty: 상품.개수 });
+        }
+        var 배송비 = 배송비계산(상품금액);
+        var 낼금액 = 상품금액 + 배송비;
+
+        // 저장이 끝날 때까지 버튼을 잠가 둡니다 (두 번 눌리는 것 방지)
+        var 버튼 = document.getElementById("order-btn");
+        버튼.disabled = true;
+        버튼.textContent = "주문 중...";
+
+        sb.from("orders").insert({
+          user_id: 사용자.id,
+          items: 보낼상품,
+          goods_total: 상품금액,
+          ship_fee: 배송비,
+          total: 낼금액
+        }).then(function (저장결과) {
+          버튼.textContent = "주문하기";
+
+          if (저장결과.error) {
+            버튼.disabled = false;
+            짧은알림("주문 저장에 실패했어요: " + 저장결과.error.message);
+            return;
+          }
+
+          장바구니목록 = [];
+          장바구니그리기();
+          장바구니닫기();
+          짧은알림("총 " + 돈표시(낼금액) + "원 주문이 접수되었어요");
+        });
+      });
     }
 
     // 맨 위 장바구니를 누르면 팝업이 뜹니다
