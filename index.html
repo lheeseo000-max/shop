@@ -412,23 +412,57 @@
     }
 
     /* ===================================================
-       카테고리 + 검색 줄
+       왼쪽 필터 배너 (검색 + 카테고리)
        =================================================== */
-    .filter-bar {
-      position: sticky;
-      top: 64px;
-      z-index: 40;
-      background-color: rgba(250, 248, 245, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
-      padding: 14px 0;
+
+    /* 상품 목록을 [왼쪽 배너 | 상품 격자] 두 칸으로 나눕니다 */
+    .shop-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0 36px;
+      align-items: start;
     }
-    .filter-bar .inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
+
+    /* 왼쪽 배너는 스크롤을 따라 같이 내려옵니다 (맨 위 고정 바 64px 아래) */
+    .side-filter {
+      grid-column: 1;
+      grid-row: 1 / span 3;
+      align-self: start;
+      position: sticky;
+      top: 84px;
+    }
+
+    /* 오른쪽 칸에 들어가는 것들 */
+    .shop-layout .section-head,
+    .shop-layout .card-box,
+    .shop-layout #no-result {
+      grid-column: 2;
+    }
+
+    .side-title {
+      margin: 0 0 10px 2px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    /* 배너 안에서는 검색창이 한 줄을 다 씁니다 */
+    .side-filter .search-area {
+      flex: none;
+      width: 100%;
+      margin-bottom: 26px;
+    }
+
+    /* 배너 안에서는 카테고리를 위아래로 쌓습니다 */
+    .side-filter .chips {
+      flex-direction: column;
+      gap: 6px;
+    }
+    .side-filter .chip {
+      width: 100%;
+      text-align: left;
+      padding: 9px 16px;
     }
 
     /* 카테고리 알약 버튼 */
@@ -951,10 +985,15 @@
     @media (max-width: 680px) {
       .hero { height: 340px; }
       .hero h2 { font-size: 30px; }
-      .filter-bar .inner { flex-direction: column; align-items: stretch; }
-      .search-area { flex: 1 1 auto; }
-      .chips { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
-      .chip { flex: 0 0 auto; }
+      .shop-layout { grid-template-columns: 1fr; }
+      .side-filter { grid-row: auto; position: static; margin-bottom: 26px; }
+      .shop-layout .section-head,
+      .shop-layout .card-box,
+      .shop-layout #no-result { grid-column: 1; }
+      .side-title { display: none; }
+      .side-filter .search-area { margin-bottom: 14px; }
+      .side-filter .chips { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .side-filter .chip { width: auto; flex: 0 0 auto; text-align: center; }
       .card-box { grid-template-columns: repeat(2, 1fr); gap: 26px 14px; }
       .about-text { font-size: 19px; }
       .user-welcome { max-width: 150px; }
@@ -1006,31 +1045,28 @@
     </div>
   </div>
 
-  <!-- ===== 카테고리 + 검색 ===== -->
-  <div class="filter-bar">
-    <div class="inner">
-
-      <div class="chips">
-        <button class="chip active" onclick="showCategory('전체', this)">전체</button>
-        <button class="chip" onclick="showCategory('빵', this)">빵</button>
-        <button class="chip" onclick="showCategory('디저트', this)">디저트</button>
-        <button class="chip" onclick="showCategory('인기', this)">인기</button>
-        <button class="chip" onclick="showAlert()">주문안내</button>
-      </div>
-
-      <div class="search-area">
-        <span class="search-icon">&#128269;</span>
-        <input type="text" class="search-box" id="search-box"
-               onkeyup="showProducts()"
-               placeholder="빵 이름 검색 (ㅋㄹㅇㅅ 도 가능)">
-      </div>
-
-    </div>
-  </div>
-
   <!-- ===== 상품 목록 ===== -->
   <div class="products">
-    <div class="inner">
+    <div class="inner shop-layout">
+
+      <!-- 왼쪽 배너 : 검색 + 카테고리 -->
+      <aside class="side-filter">
+        <div class="search-area">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" class="search-box" id="search-box"
+                 onkeyup="showProducts()"
+                 placeholder="빵 이름·초성 검색">
+        </div>
+
+        <p class="side-title">카테고리</p>
+        <div class="chips">
+          <button class="chip active" onclick="showCategory('전체', this)">전체</button>
+          <button class="chip" onclick="showCategory('빵', this)">빵</button>
+          <button class="chip" onclick="showCategory('디저트', this)">디저트</button>
+          <button class="chip" onclick="showCategory('인기', this)">인기</button>
+          <button class="chip" onclick="showAlert()">주문안내</button>
+        </div>
+      </aside>
 
       <div class="section-head">
         <h2>브레드피트의 모든 빵</h2>
